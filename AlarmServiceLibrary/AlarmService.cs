@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Text;
+using Host.EventArguments;
 
 namespace AlarmServiceLibrary
 {
+    [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode =InstanceContextMode.Single)]
     public class AlarmService : IAlarmService
     {
+        public EventHandler Alarm;
+
         public void ActivateAlarm(string name)
         {
-            
+            Alarm?.Invoke(name, new AlarmEventArgs() {Name = name});
         }
     }
 }

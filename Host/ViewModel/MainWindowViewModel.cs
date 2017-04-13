@@ -1,19 +1,28 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using AlarmServiceLibrary;
+using Host.EventArguments;
+using Host.Model;
+using MyLibrary.SelectPanel;
 
 namespace Host.ViewModel
 {
     public class MainWindowViewModel : BaseViewModel
     {
+        private ObservableCollection<IPanelItem> _alarms = new ObservableCollection<IPanelItem>();
+
         public MainWindowViewModel()
         {
             // Step 1 Create a URI to serve as the base address.  
-            Uri baseAddress = new Uri("http://localhost:9000/GettingStarted/");
-
-            // Step 2 Create a ServiceHost instance  
-            ServiceHost selfHost = new ServiceHost(typeof (AlarmService), baseAddress);
+            Uri baseAddress = new Uri("http://localhost:9000/AlarmService/");
+            
+            // Step 2 Create a ServiceHost instance 
+            AlarmService serv = new AlarmService();
+            serv.Alarm += Alarm; 
+            ServiceHost selfHost = new ServiceHost(serv, baseAddress);       
 
             try
             {
@@ -34,5 +43,19 @@ namespace Host.ViewModel
                 selfHost.Abort();
             }
         }
+
+        private void Alarm(object sender, EventArgs eventArgs)
+        {
+            var alarmEventArgs = eventArgs as AlarmEventArgs;
+
+            if (alarmEventArgs != null)
+                Alarms.Add(new AlarmModel() {Name = alarmEventArgs.Name});
+        }
+
+        public ObservableCollection<IPanelItem> Alarms
+        {
+            get { return _alarms; }
+            set { _alarms = value; }
+        } 
     }
 }
