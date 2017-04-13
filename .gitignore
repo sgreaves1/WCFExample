@@ -3,3 +3,5 @@ packages/**/*
 !packages/repositories.config
 Host/bin/
 Host/obj/
+AlarmServiceLibrary/obj/
+Client/obj/
