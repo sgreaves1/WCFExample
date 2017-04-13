@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCF Example", "WCF Example\WCF Example.csproj", "{223F70A3-4936-4772-9AC4-FA086F277DAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Host", "Host\Host.csproj", "{7CCD2AE1-6B23-46A7-926A-C5D1A8DF889E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{223F70A3-4936-4772-9AC4-FA086F277DAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{223F70A3-4936-4772-9AC4-FA086F277DAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{223F70A3-4936-4772-9AC4-FA086F277DAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{223F70A3-4936-4772-9AC4-FA086F277DAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CCD2AE1-6B23-46A7-926A-C5D1A8DF889E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CCD2AE1-6B23-46A7-926A-C5D1A8DF889E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CCD2AE1-6B23-46A7-926A-C5D1A8DF889E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CCD2AE1-6B23-46A7-926A-C5D1A8DF889E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

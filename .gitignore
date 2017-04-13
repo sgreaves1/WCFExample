@@ -1,3 +1,5 @@
 WCF Example/obj/
 packages/**/*
 !packages/repositories.config
+Host/bin/
+Host/obj/

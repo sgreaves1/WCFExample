@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace WCF_Example
+namespace Host
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
