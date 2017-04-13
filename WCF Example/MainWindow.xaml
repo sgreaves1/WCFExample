@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:WCF_Example"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
+    <StackPanel>
+        <Label Content="Host" HorizontalContentAlignment="Center"/>
         
-    </Grid>
+    </StackPanel>
 </Window>
