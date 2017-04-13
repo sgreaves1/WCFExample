@@ -1,0 +1,1 @@
+G:\Work Stuff\WCF Example\WCF Example\WCF Example\bin\Debug\WCF Example.exe.config
