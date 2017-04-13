@@ -1,0 +1,3 @@
+WCF Example/obj/
+packages/**/*
+!packages/repositories.config
