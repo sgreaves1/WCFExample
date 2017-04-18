@@ -8,11 +8,11 @@ namespace Client.ViewModel
     public class MainWindowViewModel : BaseModel
     {
         private static Random rnd = new Random(DateTime.Now.Millisecond);
-        private static int clientID = rnd.Next(1, 10000);
+        private int _clientID = rnd.Next(1, 10000);
         
-        static CancellationTokenSource cancellation = new CancellationTokenSource();
+        CancellationTokenSource cancellation = new CancellationTokenSource();
 
-        static AlarmServiceClient client = new AlarmServiceClient();
+        AlarmServiceClient client = new AlarmServiceClient();
 
         public MainWindowViewModel()
         {
@@ -24,18 +24,18 @@ namespace Client.ViewModel
             client.Close();
         }
 
-        static async void Run()
+        async void Run()
         {
             await RepeatActionEvery(Action, TimeSpan.FromSeconds(1), cancellation.Token);
         }
 
-        private static void Action()
+        private void Action()
         {
-            client.ActivateAlarm(clientID, "Sam");
+            client.ActivateAlarm(ClientID, "Sam");
             Console.WriteLine("Alarm Sent.");
         }
 
-        public static async Task RepeatActionEvery(Action action, TimeSpan interval, CancellationToken cancellationToken)
+        public async Task RepeatActionEvery(Action action, TimeSpan interval, CancellationToken cancellationToken)
         {
             while (true)
             {
@@ -52,6 +52,16 @@ namespace Client.ViewModel
                     Console.WriteLine("Alarm Task Cancel");
                     return;
                 }
+            }
+        }
+
+        public int ClientID
+        {
+            get { return _clientID; }
+            set
+            {
+                _clientID = value;
+                OnPropertyChanged();
             }
         }
     }
