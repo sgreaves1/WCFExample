@@ -7,7 +7,7 @@ namespace Client
 {
     class Program
     {
-        private static Random rnd = new Random();
+        private static Random rnd = new Random(DateTime.Now.Millisecond);
         private static int clientID = rnd.Next(1, 10000);
 
         static CancellationTokenSource cancellation = new CancellationTokenSource();

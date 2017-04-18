@@ -4,15 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:myLibrary="clr-namespace:MyLibrary;assembly=MyLibrary"
+        xmlns:userControl="clr-namespace:Host.UserControl"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    
     <StackPanel>
         <Label Content="Host" HorizontalContentAlignment="Center"/>
-        
-        <StackPanel Orientation="Horizontal">
-            <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}"/>
+
+        <StackPanel Orientation="Horizontal" Margin="10,10,10,10">
+            <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}" Margin="0,0,10,0" Width="100" MinHeight="100"/>
             
-            
+            <userControl:AlarmDetails Width="386"/>
         </StackPanel>
         
     </StackPanel>
