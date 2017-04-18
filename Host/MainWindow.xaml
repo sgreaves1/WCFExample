@@ -9,6 +9,11 @@
     <StackPanel>
         <Label Content="Host" HorizontalContentAlignment="Center"/>
         
-        <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}"/>
+        <StackPanel Orientation="Horizontal">
+            <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}"/>
+            
+            
+        </StackPanel>
+        
     </StackPanel>
 </Window>

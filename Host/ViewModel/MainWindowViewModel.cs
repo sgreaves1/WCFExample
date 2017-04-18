@@ -48,7 +48,7 @@ namespace Host.ViewModel
             var alarmEventArgs = eventArgs as AlarmEventArgs;
 
             if (alarmEventArgs != null)
-                Alarms.Add(new AlarmModel() {Name = alarmEventArgs.Name});
+                Alarms.Add(new AlarmModel {ClientId = alarmEventArgs.ClientId, Name = alarmEventArgs.Name});
         }
 
         public ObservableCollection<IPanelItem> Alarms
