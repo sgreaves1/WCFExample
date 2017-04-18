@@ -4,13 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="300" d:DesignWidth="300"
+             x:Name="Root">
     <StackPanel HorizontalAlignment="Center">
-        <Label Content="Name" HorizontalAlignment="Center"/>
+        <Label Content="{Binding ElementName=Root, Path=Alarm.Name}" HorizontalAlignment="Center"/>
 
         <StackPanel Orientation="Horizontal">
             <Label Content="Client: "/>
-            <Label Content="ID here"/>
+            <Label Content="{Binding ElementName=Root, Path=Alarm.ClientId}"/>
         </StackPanel>
         
     </StackPanel>

@@ -19,7 +19,7 @@
         <StackPanel Orientation="Horizontal" Margin="10,10,10,10">
             <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}" SelectedItem="{Binding Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,10,0" Width="100" MinHeight="100"/>
 
-            <userControl:AlarmDetails Width="386" Visibility="{Binding Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}}"/>
+            <userControl:AlarmDetails Width="386" Alarm="{Binding Path=SelectedItem}" Visibility="{Binding Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}}"/>
         </StackPanel>
         
     </StackPanel>
