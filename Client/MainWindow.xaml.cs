@@ -1,11 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 using Client.AlarmServiceReference;
 
 namespace Client
 {
-    class Program
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
     {
         private static Random rnd = new Random(DateTime.Now.Millisecond);
         private static int clientID = rnd.Next(1, 10000);
@@ -14,18 +30,15 @@ namespace Client
 
         static AlarmServiceClient client = new AlarmServiceClient();
 
-        static void Main(string[] args)
+        public MainWindow()
         {
+            InitializeComponent();
+
             Console.WriteLine("Client id: " + clientID);
             Console.WriteLine("The client is running.");
             Console.WriteLine("The client will send random alarms ever second.");
-            Console.WriteLine("Press <ENTER> to terminate client at any time.");
             Console.WriteLine();
             Run();
-            Console.ReadLine();
-
-            //Step 3: Closing the client gracefully closes the connection and cleans up resources.  
-            client.Close();
         }
 
         static async void Run()
@@ -57,6 +70,11 @@ namespace Client
                     return;
                 }
             }
+        }
+
+        private void MainWindow_OnClosing(object sender, CancelEventArgs e)
+        {
+            client.Close();
         }
     }
 }

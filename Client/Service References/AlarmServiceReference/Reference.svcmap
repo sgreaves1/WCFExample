@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="4543d58e-197f-449e-bd04-e6e7d4b37b3b" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="f4cbad72-830b-48c1-a996-805d635644bd" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -22,10 +22,10 @@
     <MetadataSource Address="http://localhost:9000/AlarmService/" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="item.disco" MetadataType="Disco" ID="24803f4a-ca75-492c-b0a4-f0949d74bca5" SourceId="1" SourceUrl="http://localhost:9000/AlarmService/?disco" />
-    <MetadataFile FileName="AlarmService.wsdl" MetadataType="Wsdl" ID="e56561cf-a389-45a6-8e53-738091df5c97" SourceId="1" SourceUrl="http://localhost:9000/AlarmService/?wsdl" />
-    <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="8d5fce9c-36bb-483f-a949-a672708dc2c5" SourceId="1" SourceUrl="http://localhost:9000/AlarmService/?xsd=xsd0" />
-    <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="eb754d87-2c02-4d71-a677-9c8aad218599" SourceId="1" SourceUrl="http://localhost:9000/AlarmService/?xsd=xsd1" />
+    <MetadataFile FileName="item.disco" MetadataType="Disco" ID="799a7a6b-e441-4a66-830f-3761958227a0" SourceId="1" SourceUrl="http://localhost:9000/AlarmService/?disco" />
+    <MetadataFile FileName="AlarmService.wsdl" MetadataType="Wsdl" ID="5d38a89a-0e43-4fea-a5c9-6b466c667a78" SourceId="1" SourceUrl="http://localhost:9000/AlarmService/?wsdl" />
+    <MetadataFile FileName="item.xsd" MetadataType="Schema" ID="a03f3caa-f006-4e09-95bf-0634446fbb54" SourceId="1" SourceUrl="http://localhost:9000/AlarmService/?xsd=xsd0" />
+    <MetadataFile FileName="item1.xsd" MetadataType="Schema" ID="a7eff18b-0d98-4018-824f-180a35745252" SourceId="1" SourceUrl="http://localhost:9000/AlarmService/?xsd=xsd1" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
