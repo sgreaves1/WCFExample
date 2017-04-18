@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Client.AlarmServiceReference;
@@ -38,7 +35,7 @@ namespace Client
 
         private static void Action()
         {
-            client.ActivateAlarm("Sam");
+            client.ActivateAlarm(clientID, "Sam");
             Console.WriteLine("Alarm Sent.");
         }
 

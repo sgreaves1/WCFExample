@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ServiceModel;
-using Host.EventArguments;
+using AlarmServiceLibrary.EventArguments;
 
 namespace AlarmServiceLibrary
 {
@@ -9,9 +9,9 @@ namespace AlarmServiceLibrary
     {
         public EventHandler Alarm;
 
-        public void ActivateAlarm(string name)
+        public void ActivateAlarm(int clientId, string name)
         {
-            Alarm?.Invoke(name, new AlarmEventArgs() {Name = name});
+            Alarm?.Invoke(name, new AlarmEventArgs() {ClientId = clientId, Name = name});
         }
     }
 }

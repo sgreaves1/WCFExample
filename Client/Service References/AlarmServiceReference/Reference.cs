@@ -16,10 +16,10 @@ namespace Client.AlarmServiceReference {
     public interface IAlarmService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAlarmService/ActivateAlarm", ReplyAction="http://tempuri.org/IAlarmService/ActivateAlarmResponse")]
-        void ActivateAlarm(string name);
+        void ActivateAlarm(int clientId, string name);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IAlarmService/ActivateAlarm", ReplyAction="http://tempuri.org/IAlarmService/ActivateAlarmResponse")]
-        System.Threading.Tasks.Task ActivateAlarmAsync(string name);
+        System.Threading.Tasks.Task ActivateAlarmAsync(int clientId, string name);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -49,12 +49,12 @@ namespace Client.AlarmServiceReference {
                 base(binding, remoteAddress) {
         }
         
-        public void ActivateAlarm(string name) {
-            base.Channel.ActivateAlarm(name);
+        public void ActivateAlarm(int clientId, string name) {
+            base.Channel.ActivateAlarm(clientId, name);
         }
         
-        public System.Threading.Tasks.Task ActivateAlarmAsync(string name) {
-            return base.Channel.ActivateAlarmAsync(name);
+        public System.Threading.Tasks.Task ActivateAlarmAsync(int clientId, string name) {
+            return base.Channel.ActivateAlarmAsync(clientId, name);
         }
     }
 }

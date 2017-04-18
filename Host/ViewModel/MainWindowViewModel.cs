@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using AlarmServiceLibrary;
-using Host.EventArguments;
+using AlarmServiceLibrary.EventArguments;
 using Host.Model;
 using MyLibrary.SelectPanel;
 

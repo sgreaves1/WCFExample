@@ -6,6 +6,6 @@ namespace AlarmServiceLibrary
     public interface IAlarmService
     {
         [OperationContract]
-        void ActivateAlarm(string name);
+        void ActivateAlarm(int clientId, string name);
     }
 }
