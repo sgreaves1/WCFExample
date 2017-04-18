@@ -5,16 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:myLibrary="clr-namespace:MyLibrary;assembly=MyLibrary"
         xmlns:userControl="clr-namespace:Host.UserControl"
+        xmlns:converter="clr-namespace:Host.Converter"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
+    
+    <Window.Resources>
+        <converter:NullTovisibilityConverter x:Key="NullToVisibilityConverter"/>
+    </Window.Resources>
     
     <StackPanel>
         <Label Content="Host" HorizontalContentAlignment="Center"/>
 
         <StackPanel Orientation="Horizontal" Margin="10,10,10,10">
-            <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}" Margin="0,0,10,0" Width="100" MinHeight="100"/>
-            
-            <userControl:AlarmDetails Width="386"/>
+            <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}" SelectedItem="{Binding Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,10,0" Width="100" MinHeight="100"/>
+
+            <userControl:AlarmDetails Width="386" Visibility="{Binding Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}}"/>
         </StackPanel>
         
     </StackPanel>

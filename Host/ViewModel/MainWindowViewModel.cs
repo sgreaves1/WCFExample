@@ -13,6 +13,8 @@ namespace Host.ViewModel
     {
         private ObservableCollection<IPanelItem> _alarms = new ObservableCollection<IPanelItem>();
 
+        private IPanelItem _selectedItem;
+
         public MainWindowViewModel()
         {
             // Step 1 Create a URI to serve as the base address.  
@@ -55,6 +57,16 @@ namespace Host.ViewModel
         {
             get { return _alarms; }
             set { _alarms = value; }
-        } 
+        }
+
+        public IPanelItem SelectedItem
+        {
+            get { return _selectedItem; }
+            set
+            {
+                _selectedItem = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

@@ -60,6 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converter\NullTovisibilityConverter.cs" />
     <Compile Include="Model\AlarmModel.cs" />
     <Compile Include="Model\BaseModel.cs" />
     <Compile Include="UserControl\AlarmDetails.xaml.cs">
