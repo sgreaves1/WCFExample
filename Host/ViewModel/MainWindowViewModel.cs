@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using AlarmServiceLibrary;

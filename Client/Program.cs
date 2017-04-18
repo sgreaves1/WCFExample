@@ -10,12 +10,16 @@ namespace Client
 {
     class Program
     {
+        private static Random rnd = new Random();
+        private static int clientID = rnd.Next(1, 10000);
+
         static CancellationTokenSource cancellation = new CancellationTokenSource();
 
         static AlarmServiceClient client = new AlarmServiceClient();
 
         static void Main(string[] args)
         {
+            Console.WriteLine("Client id: " + clientID);
             Console.WriteLine("The client is running.");
             Console.WriteLine("The client will send random alarms ever second.");
             Console.WriteLine("Press <ENTER> to terminate client at any time.");
