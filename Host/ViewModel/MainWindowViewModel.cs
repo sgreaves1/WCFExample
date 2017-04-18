@@ -5,6 +5,7 @@ using System.ServiceModel.Description;
 using AlarmServiceLibrary;
 using AlarmServiceLibrary.EventArguments;
 using Host.Model;
+using Host.XMLReader;
 using MyLibrary.SelectPanel;
 
 namespace Host.ViewModel
@@ -18,7 +19,7 @@ namespace Host.ViewModel
         public MainWindowViewModel()
         {
             // Step 1 Create a URI to serve as the base address.  
-            Uri baseAddress = new Uri("http://localhost:9000/AlarmService/");
+            Uri baseAddress = new Uri(new DataReader().GetSettings());
             
             // Step 2 Create a ServiceHost instance 
             AlarmService serv = new AlarmService();
