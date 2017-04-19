@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
 using Client.AlarmServiceReference;
+using TextLoggingPackage;
 
 namespace Client.ViewModel
 {
@@ -16,6 +18,8 @@ namespace Client.ViewModel
 
         public MainWindowViewModel()
         {
+            Logger.ApplicationLoggingLevel = LoggingLevel.Trace;
+            ReadAllSettings();
             Run();
         }
 
@@ -29,10 +33,34 @@ namespace Client.ViewModel
             await RepeatActionEvery(Action, TimeSpan.FromSeconds(1), cancellation.Token);
         }
 
+        void ReadAllSettings()
+        {
+            try
+            {
+                var appSettings = ConfigurationManager.AppSettings;
+
+                if (appSettings.Count == 0)
+                {
+                    Logger.Log("No App settings.", "WCF Client App", LoggingLevel.Trace);
+                }
+                else
+                {
+                    foreach (var key in appSettings.AllKeys)
+                    {
+                        Logger.Log("Key: "+ key +" Value: " + appSettings[key], "WCF Client App", LoggingLevel.Trace);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         private void Action()
         {
             client.ActivateAlarm(ClientID, "Sam");
-            Console.WriteLine("Alarm Sent.");
+            Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
         }
 
         public async Task RepeatActionEvery(Action action, TimeSpan interval, CancellationToken cancellationToken)
