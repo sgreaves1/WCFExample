@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace Client.ViewModel
         CancellationTokenSource cancellation = new CancellationTokenSource();
 
         AlarmServiceClient client = new AlarmServiceClient();
+
+        private ObservableCollection<string> endpointAddress = new ObservableCollection<string>(); 
 
         public MainWindowViewModel()
         {
@@ -48,12 +51,14 @@ namespace Client.ViewModel
                     foreach (var key in appSettings.AllKeys)
                     {
                         Logger.Log("Key: "+ key +" Value: " + appSettings[key], "WCF Client App", LoggingLevel.Trace);
+                        
+                        endpointAddress.Add(appSettings[key]);
                     }
                 }
             }
-            catch (Exception)
+            catch (ConfigurationErrorsException ex)
             {
-                throw;
+                Logger.Log("Configuration Manager threw an exception: " + ex.Message, "WCF Client App", LoggingLevel.Trace);
             }
         }
 
