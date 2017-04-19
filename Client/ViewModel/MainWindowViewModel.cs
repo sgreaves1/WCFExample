@@ -17,7 +17,9 @@ namespace Client.ViewModel
 
         AlarmServiceClient client = new AlarmServiceClient();
 
-        private ObservableCollection<string> endpointAddress = new ObservableCollection<string>(); 
+        private ObservableCollection<string> endpointAddress = new ObservableCollection<string>();
+
+        private bool _connected;
 
         public MainWindowViewModel()
         {
@@ -64,8 +66,18 @@ namespace Client.ViewModel
 
         private void Action()
         {
-            client.ActivateAlarm(ClientID, "Sam");
-            Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
+            try
+            {
+                client.ActivateAlarm(ClientID, "Sam");
+                Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
+                Connected = true;
+            }
+            catch (Exception)
+            {
+                Logger.Log("Not connected to wcf host." , "WCF Client App", LoggingLevel.Trace);
+                Connected = false;
+                cancellation.Cancel();
+            }
         }
 
         public async Task RepeatActionEvery(Action action, TimeSpan interval, CancellationToken cancellationToken)
@@ -94,6 +106,16 @@ namespace Client.ViewModel
             set
             {
                 _clientID = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool Connected
+        {
+            get { return _connected; }
+            set
+            {
+                _connected = value;
                 OnPropertyChanged();
             }
         }
