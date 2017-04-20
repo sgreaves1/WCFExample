@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Client.AlarmServiceReference;
+using Client.Model;
 using TextLoggingPackage;
 
 namespace Client.ViewModel
@@ -17,9 +19,8 @@ namespace Client.ViewModel
 
         AlarmServiceClient client = new AlarmServiceClient();
 
-        private ObservableCollection<string> endpointAddress = new ObservableCollection<string>();
-
-        private bool _connected;
+        private ObservableCollection<ServiceModel> Services = new ObservableCollection<ServiceModel>();
+        private ServiceModel _currentService;
 
         public MainWindowViewModel()
         {
@@ -54,8 +55,10 @@ namespace Client.ViewModel
                     {
                         Logger.Log("Key: "+ key +" Value: " + appSettings[key], "WCF Client App", LoggingLevel.Trace);
                         
-                        endpointAddress.Add(appSettings[key]);
+                        Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key], Connected = false});
                     }
+
+                    CurrentService = Services.First();
                 }
             }
             catch (ConfigurationErrorsException ex)
@@ -70,12 +73,12 @@ namespace Client.ViewModel
             {
                 client.ActivateAlarm(ClientID, "Sam");
                 Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
-                Connected = true;
+                CurrentService.Connected = true;
             }
             catch (Exception)
             {
-                Logger.Log("Not connected to wcf host." , "WCF Client App", LoggingLevel.Trace);
-                Connected = false;
+                Logger.Log("Not connected to WCF host." , "WCF Client App", LoggingLevel.Trace);
+                CurrentService.Connected = false;
                 cancellation.Cancel();
             }
         }
@@ -110,12 +113,12 @@ namespace Client.ViewModel
             }
         }
 
-        public bool Connected
+        public ServiceModel CurrentService
         {
-            get { return _connected; }
+            get { return _currentService; }
             set
             {
-                _connected = value;
+                _currentService = value;
                 OnPropertyChanged();
             }
         }
