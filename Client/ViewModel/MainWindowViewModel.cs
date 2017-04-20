@@ -19,8 +19,7 @@ namespace Client.ViewModel
 
         AlarmServiceClient client = new AlarmServiceClient();
 
-        private ObservableCollection<ServiceModel> Services = new ObservableCollection<ServiceModel>();
-        private ServiceModel _currentService;
+        private ObservableCollection<ServiceModel> _services = new ObservableCollection<ServiceModel>();
 
         public MainWindowViewModel()
         {
@@ -31,7 +30,14 @@ namespace Client.ViewModel
 
         ~MainWindowViewModel()
         {
-            client.Close();
+            try
+            {
+                client.Close();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("Service threw an exception: " + ex.Message, "WCF Client App", LoggingLevel.Trace);
+            }
         }
 
         async void Run()
@@ -57,8 +63,6 @@ namespace Client.ViewModel
                         
                         Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key], Connected = false});
                     }
-
-                    CurrentService = Services.First();
                 }
             }
             catch (ConfigurationErrorsException ex)
@@ -73,12 +77,12 @@ namespace Client.ViewModel
             {
                 client.ActivateAlarm(ClientID, "Sam");
                 Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
-                CurrentService.Connected = true;
+                Services.First().Connected = true;
             }
             catch (Exception)
             {
                 Logger.Log("Not connected to WCF host." , "WCF Client App", LoggingLevel.Trace);
-                CurrentService.Connected = false;
+                Services.First().Connected = false;
                 cancellation.Cancel();
             }
         }
@@ -113,14 +117,14 @@ namespace Client.ViewModel
             }
         }
 
-        public ServiceModel CurrentService
+        public ObservableCollection<ServiceModel> Services
         {
-            get { return _currentService; }
+            get { return _services; }
             set
             {
-                _currentService = value;
+                _services = value;
                 OnPropertyChanged();
             }
-        }
+        } 
     }
 }
