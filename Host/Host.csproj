@@ -60,6 +60,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Command\RelayCommand.cs" />
+    <Compile Include="Converter\InvertableBooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\NullTovisibilityConverter.cs" />
     <Compile Include="Model\AlarmModel.cs" />
     <Compile Include="Model\BaseModel.cs" />
