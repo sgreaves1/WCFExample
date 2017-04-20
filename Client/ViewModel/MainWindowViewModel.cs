@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
@@ -17,14 +18,17 @@ namespace Client.ViewModel
         
         CancellationTokenSource cancellation = new CancellationTokenSource();
 
-        AlarmServiceClient client = new AlarmServiceClient();
+        private AlarmServiceClient client;
 
         private ObservableCollection<ServiceModel> _services = new ObservableCollection<ServiceModel>();
+
+        private IEnumerator CurrentService;
 
         public MainWindowViewModel()
         {
             Logger.ApplicationLoggingLevel = LoggingLevel.Trace;
             ReadAllSettings();
+            
             Run();
         }
 
@@ -63,6 +67,10 @@ namespace Client.ViewModel
                         
                         Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key], Connected = false});
                     }
+
+                    CurrentService = Services.GetEnumerator();
+                    CurrentService.MoveNext();
+                    client = new AlarmServiceClient("WSHttpBinding_IAlarmService", ((ServiceModel)CurrentService.Current).EndpointAddress);
                 }
             }
             catch (ConfigurationErrorsException ex)
@@ -77,34 +85,52 @@ namespace Client.ViewModel
             {
                 client.ActivateAlarm(ClientID, "Sam");
                 Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
-                Services.First().Connected = true;
+                ((ServiceModel)CurrentService.Current).Connected = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Logger.Log("Not connected to WCF host." , "WCF Client App", LoggingLevel.Trace);
-                Services.First().Connected = false;
+                ((ServiceModel)CurrentService.Current).Connected = false;
                 cancellation.Cancel();
             }
         }
 
         public async Task RepeatActionEvery(Action action, TimeSpan interval, CancellationToken cancellationToken)
         {
-            while (true)
+            await Task.Factory.StartNew(async () =>
             {
-                action();
-                Task task = Task.Delay(interval, cancellationToken);
-
-                try
+                while (true)
                 {
-                    await task;
-                }
+                    try
+                    {
+                        action();
+                        await Task.Delay(interval, cancellationToken);
 
-                catch (TaskCanceledException)
-                {
-                    Console.WriteLine("Alarm Task Cancel");
-                    return;
+                    }
+                    catch (TaskCanceledException)
+                    {
+                        Console.WriteLine("Alarm Task Cancel");
+
+                        GetNextService();
+                        cancellation.Dispose();
+                        cancellation = new CancellationTokenSource();
+                        cancellationToken = cancellation.Token;
+
+                        await Task.Delay(interval);
+                    }
                 }
+            }, cancellationToken);
+        }
+
+        private void GetNextService()
+        {
+            if (!CurrentService.MoveNext())
+            {
+                CurrentService.Reset();
+                CurrentService.MoveNext();
             }
+
+            client = new AlarmServiceClient("WSHttpBinding_IAlarmService", ((ServiceModel)CurrentService.Current).EndpointAddress);
         }
 
         public int ClientID
