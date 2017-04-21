@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Configuration;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Client.AlarmServiceReference;
+using Client.Enumerator;
 using Client.Model;
 using TextLoggingPackage;
 
@@ -65,7 +65,7 @@ namespace Client.ViewModel
                     {
                         Logger.Log("Key: "+ key +" Value: " + appSettings[key], "WCF Client App", LoggingLevel.Trace);
                         
-                        Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key], Connected = false});
+                        Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key]});
                     }
 
                     CurrentService = Services.GetEnumerator();
@@ -85,12 +85,13 @@ namespace Client.ViewModel
             {
                 client.ActivateAlarm(ClientID, "Sam");
                 Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
-                ((ServiceModel)CurrentService.Current).Connected = true;
+                ((ServiceModel)CurrentService.Current).ConnectionState = ConnectionStatus.Connected;
+
             }
             catch (Exception ex)
             {
                 Logger.Log("Not connected to WCF host." , "WCF Client App", LoggingLevel.Trace);
-                ((ServiceModel)CurrentService.Current).Connected = false;
+                ((ServiceModel)CurrentService.Current).ConnectionState = ConnectionStatus.Disconnected;
                 cancellation.Cancel();
             }
         }
@@ -99,6 +100,8 @@ namespace Client.ViewModel
         {
             await Task.Factory.StartNew(async () =>
             {
+                ((ServiceModel)CurrentService.Current).ConnectionState = ConnectionStatus.Attempting;
+
                 while (true)
                 {
                     try
@@ -130,6 +133,7 @@ namespace Client.ViewModel
                 CurrentService.MoveNext();
             }
 
+            ((ServiceModel)CurrentService.Current).ConnectionState = ConnectionStatus.Attempting;
             client = new AlarmServiceClient("WSHttpBinding_IAlarmService", ((ServiceModel)CurrentService.Current).EndpointAddress);
         }
 

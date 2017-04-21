@@ -1,10 +1,12 @@
-﻿namespace Client.Model
+﻿using Client.Enumerator;
+
+namespace Client.Model
 {
     public class ServiceModel : BaseModel
     {
         private string _name;
         private string _endpointAddress;
-        private bool _connected;
+        private ConnectionStatus _connectionState = ConnectionStatus.Disconnected;
 
         public string Name
         {
@@ -26,12 +28,12 @@
             }
         }
 
-        public bool Connected
+        public ConnectionStatus ConnectionState
         {
-            get { return _connected; }
+            get { return _connectionState; }
             set
             {
-                _connected = value;
+                _connectionState = value;
                 OnPropertyChanged();
             }
         }
