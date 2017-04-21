@@ -84,7 +84,7 @@ namespace Client.ViewModel
         {
             try
             {
-                CurrentService.Current.Client.ActivateAlarm(ClientID, "Sam");
+                client.ActivateAlarm(ClientID, "Sam");
                 Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
                 CurrentService.Current.ConnectionState = ConnectionStatus.Connected;
 
