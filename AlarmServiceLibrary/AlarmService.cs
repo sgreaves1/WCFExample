@@ -7,7 +7,7 @@ namespace AlarmServiceLibrary
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, InstanceContextMode =InstanceContextMode.Single)]
     public class AlarmService : IAlarmService
     {
-        public EventHandler Alarm;
+        public EventHandler<AlarmEventArgs> Alarm;
 
         public void ActivateAlarm(int clientId, string name)
         {

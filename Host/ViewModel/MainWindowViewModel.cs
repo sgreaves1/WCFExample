@@ -71,12 +71,10 @@ namespace Host.ViewModel
             Connected = false;
         }
 
-        private void Alarm(object sender, EventArgs eventArgs)
+        private void Alarm(object sender, AlarmEventArgs eventArgs)
         {
-            var alarmEventArgs = eventArgs as AlarmEventArgs;
-
-            if (alarmEventArgs != null)
-                Alarms.Add(new AlarmModel {ClientId = alarmEventArgs.ClientId, Name = alarmEventArgs.Name});
+            if (eventArgs != null)
+                Alarms.Add(new AlarmModel {ClientId = eventArgs.ClientId, Name = eventArgs.Name});
         }
 
         public ObservableCollection<IPanelItem> Alarms

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Threading;
@@ -22,7 +23,7 @@ namespace Client.ViewModel
 
         private ObservableCollection<ServiceModel> _services = new ObservableCollection<ServiceModel>();
 
-        private IEnumerator CurrentService;
+        private IEnumerator<ServiceModel> CurrentService;
 
         public MainWindowViewModel()
         {
@@ -70,7 +71,7 @@ namespace Client.ViewModel
 
                     CurrentService = Services.GetEnumerator();
                     CurrentService.MoveNext();
-                    client = new AlarmServiceClient("WSHttpBinding_IAlarmService", ((ServiceModel)CurrentService.Current).EndpointAddress);
+                    client = new AlarmServiceClient("WSHttpBinding_IAlarmService", CurrentService.Current.EndpointAddress);
                 }
             }
             catch (ConfigurationErrorsException ex)
@@ -83,15 +84,15 @@ namespace Client.ViewModel
         {
             try
             {
-                client.ActivateAlarm(ClientID, "Sam");
+                CurrentService.Current.Client.ActivateAlarm(ClientID, "Sam");
                 Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
-                ((ServiceModel)CurrentService.Current).ConnectionState = ConnectionStatus.Connected;
+                CurrentService.Current.ConnectionState = ConnectionStatus.Connected;
 
             }
             catch (Exception ex)
             {
                 Logger.Log("Not connected to WCF host." , "WCF Client App", LoggingLevel.Trace);
-                ((ServiceModel)CurrentService.Current).ConnectionState = ConnectionStatus.Disconnected;
+                CurrentService.Current.ConnectionState = ConnectionStatus.Disconnected;
                 cancellation.Cancel();
             }
         }
@@ -100,7 +101,7 @@ namespace Client.ViewModel
         {
             await Task.Factory.StartNew(async () =>
             {
-                ((ServiceModel)CurrentService.Current).ConnectionState = ConnectionStatus.Attempting;
+                CurrentService.Current.ConnectionState = ConnectionStatus.Attempting;
 
                 while (true)
                 {
@@ -133,8 +134,8 @@ namespace Client.ViewModel
                 CurrentService.MoveNext();
             }
 
-            ((ServiceModel)CurrentService.Current).ConnectionState = ConnectionStatus.Attempting;
-            client = new AlarmServiceClient("WSHttpBinding_IAlarmService", ((ServiceModel)CurrentService.Current).EndpointAddress);
+            CurrentService.Current.ConnectionState = ConnectionStatus.Attempting;
+            client = new AlarmServiceClient("WSHttpBinding_IAlarmService", CurrentService.Current.EndpointAddress);
         }
 
         public int ClientID
