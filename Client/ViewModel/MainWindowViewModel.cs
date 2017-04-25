@@ -26,6 +26,8 @@ namespace Client.ViewModel
 
         private static ILog log = LogManager.GetLogger<MainWindowViewModel>();
 
+        private string[] _names = new[] {"Sam", "Steve", "Ray", "Keeno", "Gob"};
+
         public MainWindowViewModel()
         {
             ReadAllSettings();
@@ -84,8 +86,10 @@ namespace Client.ViewModel
         {
             try
             {
-                client.ActivateAlarm(ClientID, "Sam");
-                log.Trace("Alarm Sent, Name: " + "Sam");
+                string msg = _names[rnd.Next(0, _names.Length)];
+
+                client.ActivateAlarm(ClientID, msg);
+                log.Trace("Alarm Sent, Name: " + msg);
                 CurrentService.Current.ConnectionState = ConnectionStatus.Connected;
 
             }
