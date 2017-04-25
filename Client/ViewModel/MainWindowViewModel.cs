@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Client.AlarmServiceReference;
 using Client.Enumerator;
 using Client.Model;
+using Common.Logging;
 using TextLoggingPackage;
 
 namespace Client.ViewModel
@@ -24,6 +25,8 @@ namespace Client.ViewModel
         private ObservableCollection<ServiceModel> _services = new ObservableCollection<ServiceModel>();
 
         private IEnumerator<ServiceModel> CurrentService;
+
+        private static ILog log = LogManager.GetLogger<MainWindowViewModel>();
 
         public MainWindowViewModel()
         {
@@ -65,7 +68,8 @@ namespace Client.ViewModel
                     foreach (var key in appSettings.AllKeys)
                     {
                         Logger.Log("Key: "+ key +" Value: " + appSettings[key], "WCF Client App", LoggingLevel.Trace);
-                        
+                        log.Trace("Key: " + key + " Value: " + appSettings[key]);
+
                         Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key]});
                     }
 
