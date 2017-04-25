@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
@@ -9,7 +8,6 @@ using Client.AlarmServiceReference;
 using Client.Enumerator;
 using Client.Model;
 using Common.Logging;
-using TextLoggingPackage;
 
 namespace Client.ViewModel
 {
@@ -30,7 +28,6 @@ namespace Client.ViewModel
 
         public MainWindowViewModel()
         {
-            Logger.ApplicationLoggingLevel = LoggingLevel.Trace;
             ReadAllSettings();
             
             Run();
@@ -44,7 +41,7 @@ namespace Client.ViewModel
             }
             catch (Exception ex)
             {
-                Logger.Log("Service threw an exception: " + ex.Message, "WCF Client App", LoggingLevel.Trace);
+                log.Trace("Service threw an exception: " + ex.Message);
             }
         }
 
@@ -61,13 +58,12 @@ namespace Client.ViewModel
 
                 if (appSettings.Count == 0)
                 {
-                    Logger.Log("No App settings.", "WCF Client App", LoggingLevel.Trace);
+                    log.Trace("No App settings.");
                 }
                 else
                 {
                     foreach (var key in appSettings.AllKeys)
                     {
-                        Logger.Log("Key: "+ key +" Value: " + appSettings[key], "WCF Client App", LoggingLevel.Trace);
                         log.Trace("Key: " + key + " Value: " + appSettings[key]);
 
                         Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key]});
@@ -80,7 +76,7 @@ namespace Client.ViewModel
             }
             catch (ConfigurationErrorsException ex)
             {
-                Logger.Log("Configuration Manager threw an exception: " + ex.Message, "WCF Client App", LoggingLevel.Trace);
+                log.Trace("Configuration Manager threw an exception: " + ex.Message);
             }
         }
 
@@ -89,13 +85,13 @@ namespace Client.ViewModel
             try
             {
                 client.ActivateAlarm(ClientID, "Sam");
-                Logger.Log("Alarm Sent, Name: " + "Sam", "WCF Client App", LoggingLevel.Trace);
+                log.Trace("Alarm Sent, Name: " + "Sam");
                 CurrentService.Current.ConnectionState = ConnectionStatus.Connected;
 
             }
             catch (Exception ex)
             {
-                Logger.Log("Not connected to WCF host." , "WCF Client App", LoggingLevel.Trace);
+                log.Trace("Not connected to WCF host.");
                 CurrentService.Current.ConnectionState = ConnectionStatus.Disconnected;
                 cancellation.Cancel();
             }
