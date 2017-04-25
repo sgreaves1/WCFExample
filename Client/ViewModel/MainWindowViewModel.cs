@@ -82,14 +82,17 @@ namespace Client.ViewModel
             }
         }
 
+        private int msgNumber = 0;
+
         private void Action()
         {
             try
             {
+                msgNumber++;
                 string msg = _names[rnd.Next(0, _names.Length)];
 
-                client.ActivateAlarm(ClientID, msg);
-                log.Trace("Alarm Sent, Name: " + msg);
+                client.ActivateAlarm(ClientID, msg + " " + msgNumber);
+                log.Trace("Alarm Sent, Name: " + msg + " " + msgNumber);
                 CurrentService.Current.ConnectionState = ConnectionStatus.Connected;
 
             }
