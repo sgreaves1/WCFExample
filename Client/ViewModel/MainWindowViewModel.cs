@@ -32,18 +32,24 @@ namespace Client.ViewModel
 
         private bool _sending;
 
+        private int _seconds;
+
         public MainWindowViewModel()
         {
+            Seconds = 10;
+
             InitCommands();
 
             ReadAllSettings();
-            
-            Run();
         }
 
         private void InitCommands()
         {
-            SendingButtonCommand = new RelayCommand(() => Sending = !Sending);
+            SendingButtonCommand = new RelayCommand(() =>
+            {
+                Sending = !Sending;
+                Run();
+            });
         }
 
         ~MainWindowViewModel()
@@ -60,7 +66,7 @@ namespace Client.ViewModel
 
         async void Run()
         {
-            await RepeatActionEvery(Action, TimeSpan.FromSeconds(1), cancellation.Token);
+            await RepeatActionEvery(Action, TimeSpan.FromSeconds(Seconds), cancellation.Token);
         }
 
         void ReadAllSettings()
@@ -182,6 +188,16 @@ namespace Client.ViewModel
             set
             {
                 _sending = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int Seconds
+        {
+            get { return _seconds;}
+            set
+            {
+                _seconds = value;
                 OnPropertyChanged();
             }
         }

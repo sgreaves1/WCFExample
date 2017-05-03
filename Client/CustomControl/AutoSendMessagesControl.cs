@@ -63,6 +63,15 @@ namespace Client.CustomControl
                 typeof(AutoSendMessagesControl), 
                 new PropertyMetadata(null));
 
+        // Using a DependencyProperty as the backing store for NumericValue.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NumericValueProperty =
+            DependencyProperty.Register("NumericValue", 
+                typeof(int), 
+                typeof(AutoSendMessagesControl),
+                new PropertyMetadata(0));
+
+
+
         static AutoSendMessagesControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(AutoSendMessagesControl), new FrameworkPropertyMetadata(typeof(AutoSendMessagesControl)));
@@ -90,6 +99,12 @@ namespace Client.CustomControl
         {
             get { return (ICommand)GetValue(ButtonClickedCommandProperty); }
             set { SetValue(ButtonClickedCommandProperty, value); }
+        }
+
+        public int NumericValue
+        {
+            get { return (int)GetValue(NumericValueProperty); }
+            set { SetValue(NumericValueProperty, value); }
         }
     }
 }

@@ -18,6 +18,7 @@
                                                BorderBrush="Black"
                                                BorderThickness="1"
                                                Sending="{Binding Path=Sending}"
-                                               ButtonClickedCommand="{Binding Path=SendingButtonCommand}"/>
+                                               ButtonClickedCommand="{Binding Path=SendingButtonCommand}"
+                                               NumericValue="{Binding Path=Seconds}"/>
     </StackPanel>
 </Window>
