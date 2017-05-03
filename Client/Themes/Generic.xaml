@@ -20,8 +20,8 @@
                         
                         <StackPanel Orientation="Horizontal">
                             <StackPanel Orientation="Vertical">
-                                <Button Content="Start Sending" Width="{TemplateBinding StartButtonWidth}" Visibility="{TemplateBinding Sending, Converter={StaticResource InvertableBooleanToVisibilityConverter}, ConverterParameter=Inverted}" />
-                                <Button Content="Stop Sending" Width="{TemplateBinding StopButtonWidth}" Visibility="{TemplateBinding Sending, Converter={StaticResource InvertableBooleanToVisibilityConverter}}" />
+                                <Button Content="Start Sending" Command="{TemplateBinding ButtonClickedCommand}" Width="{TemplateBinding StartButtonWidth}" Visibility="{TemplateBinding Sending, Converter={StaticResource InvertableBooleanToVisibilityConverter}, ConverterParameter=Inverted}" />
+                                <Button Content="Stop Sending" Command="{TemplateBinding ButtonClickedCommand}" Width="{TemplateBinding StopButtonWidth}" Visibility="{TemplateBinding Sending, Converter={StaticResource InvertableBooleanToVisibilityConverter}}" />
                             </StackPanel>
                             
                             <StackPanel Orientation="Vertical">

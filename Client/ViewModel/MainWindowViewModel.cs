@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Client.AlarmServiceReference;
 using Client.Enumerator;
 using Client.Model;
 using Common.Logging;
+using MyLibrary.Command;
 
 namespace Client.ViewModel
 {
@@ -28,11 +30,20 @@ namespace Client.ViewModel
 
         private string[] _names = new[] {"Sam", "Steve", "Ray", "Keeno", "Gob"};
 
+        private bool _sending;
+
         public MainWindowViewModel()
         {
+            InitCommands();
+
             ReadAllSettings();
             
             Run();
+        }
+
+        private void InitCommands()
+        {
+            SendingButtonCommand = new RelayCommand(() => Sending = !Sending);
         }
 
         ~MainWindowViewModel()
@@ -163,6 +174,18 @@ namespace Client.ViewModel
                 _services = value;
                 OnPropertyChanged();
             }
-        } 
+        }
+
+        public bool Sending
+        {
+            get { return _sending; }
+            set
+            {
+                _sending = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand SendingButtonCommand { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Client.CustomControl
 {
@@ -54,7 +55,14 @@ namespace Client.CustomControl
                 typeof(bool), 
                 typeof(AutoSendMessagesControl), 
                 new PropertyMetadata(false));
-        
+
+        // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ButtonClickedCommandProperty =
+            DependencyProperty.Register("ButtonClickedCommand", 
+                typeof(ICommand), 
+                typeof(AutoSendMessagesControl), 
+                new PropertyMetadata(null));
+
         static AutoSendMessagesControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(AutoSendMessagesControl), new FrameworkPropertyMetadata(typeof(AutoSendMessagesControl)));
@@ -76,6 +84,12 @@ namespace Client.CustomControl
         {
             get { return (bool)GetValue(SendingProperty); }
             set { SetValue(SendingProperty, value); }
+        }
+
+        public ICommand ButtonClickedCommand
+        {
+            get { return (ICommand)GetValue(ButtonClickedCommandProperty); }
+            set { SetValue(ButtonClickedCommandProperty, value); }
         }
     }
 }

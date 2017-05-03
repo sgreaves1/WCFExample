@@ -17,6 +17,7 @@
                                                StopButtonWidth="100"
                                                BorderBrush="Black"
                                                BorderThickness="1"
-                                               Sending="False"/>
+                                               Sending="{Binding Path=Sending}"
+                                               ButtonClickedCommand="{Binding Path=SendingButtonCommand}"/>
     </StackPanel>
 </Window>
