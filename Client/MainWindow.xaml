@@ -13,9 +13,10 @@
         <userControl:StatusBoxes ItemsSource="{Binding Path=Services}"/>
         
         <customControl:AutoSendMessagesControl Margin="10,10,10,0" 
-                                                StartButtonWidth="100" 
-                                                StopButtonWidth="100"
-                                                BorderBrush="Black"
-                                                BorderThickness="1"/>
+                                               StartButtonWidth="100" 
+                                               StopButtonWidth="100"
+                                               BorderBrush="Black"
+                                               BorderThickness="1"
+                                               Sending="False"/>
     </StackPanel>
 </Window>

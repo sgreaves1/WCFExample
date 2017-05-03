@@ -48,6 +48,13 @@ namespace Client.CustomControl
                 typeof(AutoSendMessagesControl),
                 new PropertyMetadata(0.0));
 
+        // Using a DependencyProperty as the backing store for Sending.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty SendingProperty =
+            DependencyProperty.Register("Sending", 
+                typeof(bool), 
+                typeof(AutoSendMessagesControl), 
+                new PropertyMetadata(false));
+        
         static AutoSendMessagesControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(AutoSendMessagesControl), new FrameworkPropertyMetadata(typeof(AutoSendMessagesControl)));
@@ -63,6 +70,12 @@ namespace Client.CustomControl
         {
             get { return (double)GetValue(StopButtonWidthProperty); }
             set { SetValue(StopButtonWidthProperty, value); }
+        }
+
+        public bool Sending
+        {
+            get { return (bool)GetValue(SendingProperty); }
+            set { SetValue(SendingProperty, value); }
         }
     }
 }
