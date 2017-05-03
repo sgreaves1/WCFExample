@@ -4,11 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:userControl="clr-namespace:Client.UserControl"
+        xmlns:customControl="clr-namespace:Client.CustomControl"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <StackPanel>
         <Label Content="{Binding Path=ClientID}" HorizontalAlignment="Center" />
 
         <userControl:StatusBoxes ItemsSource="{Binding Path=Services}"/>
+        
+        <customControl:AutoSendMessagesControl Margin="10,10,10,0" 
+                                                StartButtonWidth="100" 
+                                                StopButtonWidth="100"
+                                                BorderBrush="Black"
+                                                BorderThickness="1"/>
     </StackPanel>
 </Window>
