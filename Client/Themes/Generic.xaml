@@ -12,6 +12,7 @@
                 <ControlTemplate TargetType="{x:Type customControl:AutoSendMessagesControl}">
                     <ControlTemplate.Resources>
                         <converter:InvertableBooleanToVisibilityConverter x:Key="InvertableBooleanToVisibilityConverter" />
+                        <converter:InvertBoolConverter x:Key="InvertBoolConverter"/>
                     </ControlTemplate.Resources>
                     
                     <Border Background="{TemplateBinding Background}"
@@ -26,9 +27,9 @@
                             
                             <StackPanel Orientation="Vertical">
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Content="Interval: "/>
-                                    <myLibrary:NumericUpDown/>
-                                    <Label Content="Seconds"/>
+                                    <Label Content="Interval: " IsEnabled="{TemplateBinding Sending, Converter={StaticResource InvertBoolConverter}}"/>
+                                    <myLibrary:NumericUpDown IsEnabled="{TemplateBinding Sending, Converter={StaticResource InvertBoolConverter}}"/>
+                                    <Label Content="Seconds" IsEnabled="{TemplateBinding Sending, Converter={StaticResource InvertBoolConverter}}"/>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>

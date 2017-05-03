@@ -79,6 +79,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Converter\InvertableBooleanToVisibilityConverter.cs" />
+    <Compile Include="Converter\InvertBoolConverter.cs" />
     <Compile Include="Converter\NullTovisibilityConverter.cs" />
     <Compile Include="CustomControl\AutoSendMessagesControl.cs" />
     <Compile Include="Enumerator\ConnectionStatus.cs" />
