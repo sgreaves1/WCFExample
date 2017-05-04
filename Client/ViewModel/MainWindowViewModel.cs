@@ -52,18 +52,6 @@ namespace Client.ViewModel
             });
         }
 
-        ~MainWindowViewModel()
-        {
-            try
-            {
-                client.Close();
-            }
-            catch (Exception ex)
-            {
-                log.Trace("Service threw an exception: " + ex.Message);
-            }
-        }
-
         async void Run()
         {
             await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
