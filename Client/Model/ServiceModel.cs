@@ -1,4 +1,6 @@
-﻿using Client.Enumerator;
+﻿using System;
+using Client.AlarmServiceReference;
+using Client.Enumerator;
 
 namespace Client.Model
 {
@@ -7,6 +9,8 @@ namespace Client.Model
         private string _name;
         private string _endpointAddress;
         private ConnectionStatus _connectionState = ConnectionStatus.Disconnected;
+
+        public AlarmServiceClient Client;
 
         public string Name
         {
@@ -36,6 +40,26 @@ namespace Client.Model
                 _connectionState = value;
                 OnPropertyChanged();
             }
+        }
+
+        public bool TryConnect()
+        {
+            try
+            {
+                ConnectionState = ConnectionStatus.Attempting;
+                Client = new AlarmServiceClient("WSHttpBinding_IAlarmService", EndpointAddress);
+
+                Client.Open();
+            }
+            catch (Exception)
+            {
+
+                ConnectionState = ConnectionStatus.Disconnected;
+                return false;
+            }
+            
+            ConnectionState = ConnectionStatus.Connected;
+            return true;
         }
     }
 }

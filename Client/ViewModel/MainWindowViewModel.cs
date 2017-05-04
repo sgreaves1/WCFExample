@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -20,11 +22,9 @@ namespace Client.ViewModel
         
         CancellationTokenSource cancellation = new CancellationTokenSource();
 
-        private AlarmServiceClient client;
-
         private ObservableCollection<ServiceModel> _services = new ObservableCollection<ServiceModel>();
 
-        private IEnumerator<ServiceModel> CurrentService;
+        private ServiceModel CurrentService;
 
         private static ILog log = LogManager.GetLogger<MainWindowViewModel>();
 
@@ -54,7 +54,8 @@ namespace Client.ViewModel
 
         async void Run()
         {
-            await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
+            FindWorkingHost();
+            //await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
         }
 
         void ReadAllSettings()
@@ -75,10 +76,6 @@ namespace Client.ViewModel
 
                         Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key]});
                     }
-
-                    CurrentService = Services.GetEnumerator();
-                    CurrentService.MoveNext();
-                    client = new AlarmServiceClient("WSHttpBinding_IAlarmService", CurrentService.Current.EndpointAddress);
                 }
             }
             catch (ConfigurationErrorsException ex)
@@ -96,25 +93,40 @@ namespace Client.ViewModel
                 msgNumber++;
                 string msg = _names[rnd.Next(0, _names.Length)];
 
-                client.ActivateAlarm(ClientID, msg + " " + msgNumber);
+                CurrentService.Client.ActivateAlarm(ClientID, msg + " " + msgNumber);
                 log.Trace("Alarm Sent, Name: " + msg + " " + msgNumber);
-                CurrentService.Current.ConnectionState = ConnectionStatus.Connected;
+                CurrentService.ConnectionState = ConnectionStatus.Connected;
 
             }
             catch (Exception ex)
             {
                 log.Trace("Not connected to WCF host. " + ex.Message);
-                CurrentService.Current.ConnectionState = ConnectionStatus.Disconnected;
+                CurrentService.ConnectionState = ConnectionStatus.Disconnected;
                 cancellation.Cancel();
             }
+        }
+
+        public void FindWorkingHost()
+        {
+            foreach (var service in Services)
+            {
+                Task.Run(() =>
+                {
+                    if (service.TryConnect())
+                    {
+                        CurrentService = service;
+                    }
+                });
+            }
+            
         }
 
         public async Task IntervalMessageSending(Action sendMessageAction, TimeSpan interval, CancellationToken cancellationToken)
         {
             await Task.Factory.StartNew(async () =>
             {
-                CurrentService.Current.ConnectionState = ConnectionStatus.Attempting;
-
+                CurrentService.ConnectionState = ConnectionStatus.Attempting;
+                
                 while (true)
                 {
                     try
@@ -124,7 +136,6 @@ namespace Client.ViewModel
                     }
                     catch (TaskCanceledException)
                     {
-                        GetNextService();
                         cancellation.Dispose();
                         cancellation = new CancellationTokenSource();
                         cancellationToken = cancellation.Token;
@@ -132,19 +143,7 @@ namespace Client.ViewModel
                 }
             }, cancellationToken);
         }
-
-        private void GetNextService()
-        {
-            if (!CurrentService.MoveNext())
-            {
-                CurrentService.Reset();
-                CurrentService.MoveNext();
-            }
-
-            CurrentService.Current.ConnectionState = ConnectionStatus.Attempting;
-            client = new AlarmServiceClient("WSHttpBinding_IAlarmService", CurrentService.Current.EndpointAddress);
-        }
-
+        
         public int ClientID
         {
             get { return _clientID; }
