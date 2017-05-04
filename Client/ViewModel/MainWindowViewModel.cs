@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Client.AlarmServiceReference;
+using Client.Container;
 using Client.Enumerator;
 using Client.Model;
 using Common.Logging;
@@ -34,6 +35,8 @@ namespace Client.ViewModel
 
         private int _seconds;
 
+        private Deque<string> _messages = new Deque<string>();
+
         public MainWindowViewModel()
         {
             Seconds = 10;
@@ -55,7 +58,7 @@ namespace Client.ViewModel
         async void Run()
         {
             FindWorkingHost();
-            //await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
+            await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
         }
 
         void ReadAllSettings()
@@ -90,12 +93,16 @@ namespace Client.ViewModel
         {
             try
             {
-                msgNumber++;
-                string msg = _names[rnd.Next(0, _names.Length)];
+                if (CurrentService != null)
+                {
+                    msgNumber++;
+                    string msg = _names[rnd.Next(0, _names.Length)];
+                    _messages.AddToBack(msg + " " + msgNumber);
 
-                CurrentService.Client.ActivateAlarm(ClientID, msg + " " + msgNumber);
-                log.Trace("Alarm Sent, Name: " + msg + " " + msgNumber);
-                CurrentService.ConnectionState = ConnectionStatus.Connected;
+                    CurrentService.Client.ActivateAlarm(ClientID, _messages.First());
+                    _messages.RemoveFromFront();
+                    log.Trace("Alarm Sent, Name: " + msg + " " + msgNumber);
+                }
 
             }
             catch (Exception ex)
@@ -118,15 +125,12 @@ namespace Client.ViewModel
                     }
                 });
             }
-            
         }
 
         public async Task IntervalMessageSending(Action sendMessageAction, TimeSpan interval, CancellationToken cancellationToken)
         {
-            await Task.Factory.StartNew(async () =>
+            await Task.Run(async () =>
             {
-                CurrentService.ConnectionState = ConnectionStatus.Attempting;
-                
                 while (true)
                 {
                     try
