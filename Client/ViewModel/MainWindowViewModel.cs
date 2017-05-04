@@ -66,7 +66,7 @@ namespace Client.ViewModel
 
         async void Run()
         {
-            await RepeatActionEvery(Action, TimeSpan.FromSeconds(Seconds), cancellation.Token);
+            await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
         }
 
         void ReadAllSettings()
@@ -101,7 +101,7 @@ namespace Client.ViewModel
 
         private int msgNumber = 0;
 
-        private void Action()
+        private void SendMessage()
         {
             try
             {
@@ -115,13 +115,13 @@ namespace Client.ViewModel
             }
             catch (Exception ex)
             {
-                log.Trace("Not connected to WCF host.");
+                log.Trace("Not connected to WCF host. " + ex.Message);
                 CurrentService.Current.ConnectionState = ConnectionStatus.Disconnected;
                 cancellation.Cancel();
             }
         }
 
-        public async Task RepeatActionEvery(Action action, TimeSpan interval, CancellationToken cancellationToken)
+        public async Task IntervalMessageSending(Action sendMessageAction, TimeSpan interval, CancellationToken cancellationToken)
         {
             await Task.Factory.StartNew(async () =>
             {
@@ -131,20 +131,15 @@ namespace Client.ViewModel
                 {
                     try
                     {
-                        action();
+                        sendMessageAction();
                         await Task.Delay(interval, cancellationToken);
-
                     }
                     catch (TaskCanceledException)
                     {
-                        Console.WriteLine("Alarm Task Cancel");
-
                         GetNextService();
                         cancellation.Dispose();
                         cancellation = new CancellationTokenSource();
                         cancellationToken = cancellation.Token;
-
-                        await Task.Delay(interval);
                     }
                 }
             }, cancellationToken);
