@@ -37,13 +37,18 @@ namespace Client.ViewModel
 
         private Deque<string> _messages = new Deque<string>();
 
+        private static TaskCompletionSource<int> tcs1 = new TaskCompletionSource<int>();
+        private Task<int> t1 = tcs1.Task;
+
         public MainWindowViewModel()
         {
-            Seconds = 10;
+            Seconds = 1;
 
             InitCommands();
 
             ReadAllSettings();
+
+            ProcessMessages();
         }
 
         private void InitCommands()
@@ -52,6 +57,36 @@ namespace Client.ViewModel
             {
                 Sending = !Sending;
                 Run();
+            });
+        }
+
+        private void ProcessMessages()
+        {
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    await t1;
+
+                    lock (_messages)
+                    {
+                        if (_messages.Count > 0 && CurrentService != null)
+                        {
+                            CurrentService.Client.ActivateAlarm(ClientID, _messages.First());
+                            log.Trace("Alarm Sent, Name: " + _messages.First());
+                            _messages.RemoveFromFront();
+                        }
+
+                        if (_messages.Count == 0)
+                        {
+                            tcs1 = null;
+                            t1 = null;
+
+                            tcs1 = new TaskCompletionSource<int>();
+                            t1 = tcs1.Task;
+                        }
+                    }
+                }
             });
         }
 
@@ -99,16 +134,15 @@ namespace Client.ViewModel
                     string msg = _names[rnd.Next(0, _names.Length)];
                     _messages.AddToBack(msg + " " + msgNumber);
 
-                    CurrentService.Client.ActivateAlarm(ClientID, _messages.First());
-                    _messages.RemoveFromFront();
-                    log.Trace("Alarm Sent, Name: " + msg + " " + msgNumber);
+                    // Tell the task that we have something to process
+                    tcs1.TrySetResult(10);
                 }
-
             }
             catch (Exception ex)
             {
                 log.Trace("Not connected to WCF host. " + ex.Message);
-                CurrentService.ConnectionState = ConnectionStatus.Disconnected;
+                if (CurrentService != null) CurrentService.ConnectionState = ConnectionStatus.Disconnected;
+                CurrentService = null;
                 cancellation.Cancel();
             }
         }
