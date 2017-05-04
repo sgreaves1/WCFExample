@@ -53,7 +53,6 @@ namespace Client.Model
             }
             catch (Exception)
             {
-
                 ConnectionState = ConnectionStatus.Disconnected;
                 return false;
             }

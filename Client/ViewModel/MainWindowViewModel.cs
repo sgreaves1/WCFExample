@@ -147,18 +147,32 @@ namespace Client.ViewModel
             }
         }
 
-        public void FindWorkingHost()
+        public async void FindWorkingHost()
         {
-            foreach (var service in Services)
+            while (CurrentService == null)
             {
-                Task.Run(() =>
+                await Task.Run(() =>
                 {
-                    if (service.TryConnect())
-                    {
-                        CurrentService = service;
-                    }
+                    var task1 = DoWork(Services[0]);
+                    var task2 = DoWork(Services[1]);
+                    var task3 = DoWork(Services[2]);
+
+                    Task.WhenAll(task1, task2, task3);
                 });
+
+                await Task.Delay(5000);
             }
+        }
+
+        public async Task DoWork(ServiceModel service)
+        {
+            await Task.Run(() =>
+            { 
+                if (service.TryConnect())
+                {
+                    CurrentService = service;
+                }
+            });
         }
 
         public async Task IntervalMessageSending(Action sendMessageAction, TimeSpan interval, CancellationToken cancellationToken)
