@@ -72,9 +72,19 @@ namespace Client.ViewModel
                     {
                         if (_messages.Count > 0 && CurrentService != null)
                         {
-                            CurrentService.Client.ActivateAlarm(ClientID, _messages.First());
-                            log.Trace("Alarm Sent, Name: " + _messages.First());
-                            _messages.RemoveFromFront();
+                            try
+                            {
+                                CurrentService.Client.ActivateAlarm(ClientID, _messages.First());
+                                log.Trace("Alarm Sent, Name: " + _messages.First());
+                                _messages.RemoveFromFront();
+                            }
+                            catch (Exception ex)
+                            {
+                                log.Trace("Not connected to WCF host. " + ex.Message);
+                                if (CurrentService != null) CurrentService.ConnectionState = ConnectionStatus.Disconnected;
+                                CurrentService = null;
+                                cancellation.Cancel();
+                            }
                         }
 
                         if (_messages.Count == 0)
@@ -128,22 +138,18 @@ namespace Client.ViewModel
         {
             try
             {
-                if (CurrentService != null)
-                {
-                    msgNumber++;
-                    string msg = _names[rnd.Next(0, _names.Length)];
-                    _messages.AddToBack(msg + " " + msgNumber);
+                msgNumber++;
+                string msg = _names[rnd.Next(0, _names.Length)];
+                _messages.AddToBack(msg + " " + msgNumber);
 
+                if (CurrentService != null)
                     // Tell the task that we have something to process
                     tcs1.TrySetResult(10);
-                }
+                
             }
             catch (Exception ex)
             {
-                log.Trace("Not connected to WCF host. " + ex.Message);
-                if (CurrentService != null) CurrentService.ConnectionState = ConnectionStatus.Disconnected;
-                CurrentService = null;
-                cancellation.Cancel();
+               
             }
         }
 
