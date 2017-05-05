@@ -41,6 +41,8 @@ namespace Client.ViewModel
         private static TaskCompletionSource<int> _noMessagesCompletionSource = new TaskCompletionSource<int>();
         private Task<int> _noMessagesTask = _noMessagesCompletionSource.Task;
 
+        private bool _findingHost = false;
+
         public MainWindowViewModel()
         {
             Seconds = 1;
@@ -105,7 +107,9 @@ namespace Client.ViewModel
 
         async void Run()
         {
-            FindWorkingHost();
+            if (!_findingHost)
+                FindWorkingHost();
+
             await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
         }
 
@@ -150,22 +154,31 @@ namespace Client.ViewModel
 
         public async void FindWorkingHost()
         {
+            _findingHost = true;
+
             while (CurrentService == null)
             {
                 await Task.Run(() =>
                 {
-                    var task1 = DoWork(Services[0]);
-                    var task2 = DoWork(Services[1]);
-                    var task3 = DoWork(Services[2]);
+                    var task1 = TryConnectToServiceAsync(Services[0]);
+                    var task2 = TryConnectToServiceAsync(Services[1]);
+                    var task3 = TryConnectToServiceAsync(Services[2]);
 
                     Task.WhenAll(task1, task2, task3);
                 });
 
                 await Task.Delay(5000);
             }
+
+            _findingHost = false;
         }
 
-        public async Task DoWork(ServiceModel service)
+        /// <summary>
+        /// Make an attempt to connect to the given service.
+        /// </summary>
+        /// <param name="service">Service object to attempt WCF connection on.</param>
+        /// <returns></returns>
+        public async Task TryConnectToServiceAsync(ServiceModel service)
         {
             await Task.Run(() =>
             { 
