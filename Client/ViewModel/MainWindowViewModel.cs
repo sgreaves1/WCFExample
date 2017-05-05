@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
@@ -38,12 +39,12 @@ namespace Client.ViewModel
         private Deque<string> _messages = new Deque<string>();
 
         // Set to completed when there are messages to process. Gets reset when the message deque is empty
-        private static TaskCompletionSource<int> _noMessagesCompletionSource = new TaskCompletionSource<int>();
-        private Task<int> _noMessagesTask = _noMessagesCompletionSource.Task;
+        private static TaskCompletionSource<int> _noMessagesCompletionSource;
+        private Task<int> _noMessagesTask;
 
         // Flag used to indicate if the app is attempting to find a host. 
         private bool _findingHost = false;
-
+        
         public MainWindowViewModel()
         {
             Seconds = 1;
@@ -70,13 +71,20 @@ namespace Client.ViewModel
             {
                 while (true)
                 {
-                    // Wait for the no messages task to finish.
-                    // which means wait on this line while the deque is empty.
-                    await _noMessagesTask;
+                    Task awaitMessages = null;
+                    string message;
 
                     lock (_messages)
                     {
-                        if (_messages.Count > 0 && CurrentService != null)
+
+                        if (_messages.Count == 0)
+                        {
+                            _noMessagesCompletionSource =
+                                new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+                            awaitMessages = _noMessagesCompletionSource.Task;
+
+                        }
+                        else
                         {
                             try
                             {
@@ -87,27 +95,27 @@ namespace Client.ViewModel
                             catch (Exception ex)
                             {
                                 log.Trace("Not connected to WCF host. " + ex.Message);
-                                if (CurrentService != null) CurrentService.ConnectionState = ConnectionStatus.Disconnected;
+                                if (CurrentService != null)
+                                    CurrentService.ConnectionState = ConnectionStatus.Disconnected;
                                 CurrentService = null;
-                                cancellation.Cancel();
                             }
                         }
+                    }
 
-                        if (_messages.Count == 0)
-                        {
-                            _noMessagesCompletionSource = null;
-                            _noMessagesTask = null;
+                    if (awaitMessages != null)
+                    {
+                        // Wait for the no messages task to finish.
+                        // which means wait on this line while the deque is empty.
+                        await awaitMessages;
+                        continue;
+                    }
 
-                            _noMessagesCompletionSource = new TaskCompletionSource<int>();
-                            _noMessagesTask = _noMessagesCompletionSource.Task;
-                        }
 
-                        // If the service has gone for whatever reason, and we are not already finding a suitable host, 
-                        // then find one.
-                        if (CurrentService == null && !_findingHost)
-                        {
-                            FindWorkingHost();
-                        }
+                    // If the service has gone for whatever reason, and we are not already finding a suitable host, 
+                    // then find one.
+                    if (CurrentService == null && !_findingHost)
+                    {
+                        FindWorkingHost();
                     }
                 }
             });
@@ -151,13 +159,19 @@ namespace Client.ViewModel
 
         private void SendMessage()
         {
-            msgNumber++;
-            string msg = _names[rnd.Next(0, _names.Length)];
-            _messages.AddToBack(msg + " " + msgNumber);
-
-            if (CurrentService != null)
+            Debug.WriteLine("About to send message!");
+            lock (_messages)
+            {
+                msgNumber++;
+                string msg = _names[rnd.Next(0, _names.Length)];
+                Debug.WriteLine($"Sending message: {msgNumber}, {msg}");
+                _messages.AddToBack(msg + " " + msgNumber);
+                Debug.WriteLine($"Queued message: {msgNumber}, {msg}");
                 // Tell the task that we have something to process
-                _noMessagesCompletionSource.TrySetResult(10);
+                _noMessagesCompletionSource?.TrySetResult(10);
+                Debug.WriteLine($"Sent message: {msgNumber}, {msg}");
+            }
+            Debug.WriteLine($"Done Sending message: {msgNumber}");
         }
 
         public async void FindWorkingHost()
