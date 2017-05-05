@@ -41,6 +41,7 @@ namespace Client.ViewModel
         private static TaskCompletionSource<int> _noMessagesCompletionSource = new TaskCompletionSource<int>();
         private Task<int> _noMessagesTask = _noMessagesCompletionSource.Task;
 
+        // Flag used to indicate if the app is attempting to find a host. 
         private bool _findingHost = false;
 
         public MainWindowViewModel()
@@ -99,6 +100,13 @@ namespace Client.ViewModel
 
                             _noMessagesCompletionSource = new TaskCompletionSource<int>();
                             _noMessagesTask = _noMessagesCompletionSource.Task;
+                        }
+
+                        // If the service has gone for whatever reason, and we are not already finding a suitable host, 
+                        // then find one.
+                        if (CurrentService == null && !_findingHost)
+                        {
+                            FindWorkingHost();
                         }
                     }
                 }
