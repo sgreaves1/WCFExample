@@ -37,8 +37,9 @@ namespace Client.ViewModel
 
         private Deque<string> _messages = new Deque<string>();
 
-        private static TaskCompletionSource<int> tcs1 = new TaskCompletionSource<int>();
-        private Task<int> t1 = tcs1.Task;
+        // Set to completed when there are messages to process. Gets reset when the message deque is empty
+        private static TaskCompletionSource<int> _noMessagesCompletionSource = new TaskCompletionSource<int>();
+        private Task<int> _noMessagesTask = _noMessagesCompletionSource.Task;
 
         public MainWindowViewModel()
         {
@@ -66,7 +67,9 @@ namespace Client.ViewModel
             {
                 while (true)
                 {
-                    await t1;
+                    // Wait for the no messages task to finish.
+                    // which means wait on this line while the deque is empty.
+                    await _noMessagesTask;
 
                     lock (_messages)
                     {
@@ -89,11 +92,11 @@ namespace Client.ViewModel
 
                         if (_messages.Count == 0)
                         {
-                            tcs1 = null;
-                            t1 = null;
+                            _noMessagesCompletionSource = null;
+                            _noMessagesTask = null;
 
-                            tcs1 = new TaskCompletionSource<int>();
-                            t1 = tcs1.Task;
+                            _noMessagesCompletionSource = new TaskCompletionSource<int>();
+                            _noMessagesTask = _noMessagesCompletionSource.Task;
                         }
                     }
                 }
@@ -136,21 +139,13 @@ namespace Client.ViewModel
 
         private void SendMessage()
         {
-            try
-            {
-                msgNumber++;
-                string msg = _names[rnd.Next(0, _names.Length)];
-                _messages.AddToBack(msg + " " + msgNumber);
+            msgNumber++;
+            string msg = _names[rnd.Next(0, _names.Length)];
+            _messages.AddToBack(msg + " " + msgNumber);
 
-                if (CurrentService != null)
-                    // Tell the task that we have something to process
-                    tcs1.TrySetResult(10);
-                
-            }
-            catch (Exception ex)
-            {
-               
-            }
+            if (CurrentService != null)
+                // Tell the task that we have something to process
+                _noMessagesCompletionSource.TrySetResult(10);
         }
 
         public async void FindWorkingHost()
