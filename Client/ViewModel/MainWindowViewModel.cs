@@ -8,6 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Client.AlarmServiceReference;
 using Client.Container;
 using Client.Enumerator;
@@ -106,16 +107,19 @@ namespace Client.ViewModel
                         catch (Exception ex)
                         {
                             log.Trace("Not connected to WCF host. " + ex.Message);
+                            
                             if (CurrentService != null)
                                 CurrentService.ConnectionState = ConnectionStatus.Disconnected;
-                            CurrentService = null;
+                            
 
                             // If the service has gone for whatever reason, and we are not already finding a suitable host, 
                             // then find one.
-                            if (CurrentService == null && !_findingHost)
+                            if (!_findingHost)
                             {
                                 FindWorkingHost();
                             }
+
+                            await Task.Delay(1000);
                         }
                     }
 
@@ -182,18 +186,22 @@ namespace Client.ViewModel
         {
             _findingHost = true;
 
-            while (CurrentService == null)
+            await Task.Run(async () =>
             {
 
-                bool connected1 = TryConnectToService(Services[0]);
-                bool connected2 = TryConnectToService(Services[1]);
-                bool connected3 = TryConnectToService(Services[2]);
+                while (CurrentService == null)
+                {
 
-                if (connected1 || connected2 || connected3)
-                    break;
+                    bool connected1 = TryConnectToService(Services[0]);
+                    bool connected2 = TryConnectToService(Services[1]);
+                    bool connected3 = TryConnectToService(Services[2]);
 
-                await Task.Delay(5000);
-            }
+                    if (connected1 || connected2 || connected3)
+                        break;
+
+                    await Task.Delay(5000);
+                }
+            });
 
             _findingHost = false;
         }
@@ -209,7 +217,6 @@ namespace Client.ViewModel
             {
                 CurrentService = service;
                 return true;
-                    
             }
 
             return false;
