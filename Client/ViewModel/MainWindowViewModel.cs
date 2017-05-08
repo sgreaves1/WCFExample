@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Threading;
-using Client.AlarmServiceReference;
 using Client.Container;
 using Client.Enumerator;
 using Client.Model;
@@ -27,7 +23,7 @@ namespace Client.ViewModel
 
         private ObservableCollection<ServiceModel> _services = new ObservableCollection<ServiceModel>();
 
-        private ServiceModel CurrentService;
+        private ServiceModel CurrentService = new ServiceModel() {ConnectionState = ConnectionStatus.Disconnected};
 
         private static ILog log = LogManager.GetLogger<MainWindowViewModel>();
 
@@ -40,7 +36,7 @@ namespace Client.ViewModel
         private Deque<string> _messages = new Deque<string>();
 
         // Set to completed when there are messages to process. Gets reset when the message deque is empty
-        private static TaskCompletionSource<int> _noMessagesCompletionSource;
+        private static TaskCompletionSource<bool> _noMessagesCompletionSource;
         private Task<int> _noMessagesTask;
 
         // Flag used to indicate if the app is attempting to find a host. 
@@ -77,7 +73,7 @@ namespace Client.ViewModel
                     if (_messages.Count == 0)
                     {
                         _noMessagesCompletionSource =
-                            new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+                            new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                         awaitMessages = _noMessagesCompletionSource.Task;
                     }
 
@@ -163,23 +159,23 @@ namespace Client.ViewModel
             }
         }
 
-        private int msgNumber = 0;
+        private int _messageNumber = 0;
 
         private void SendMessage()
         {
             Debug.WriteLine("About to send message!");
             lock (_messages)
             {
-                msgNumber++;
-                string msg = _names[rnd.Next(0, _names.Length)];
-                Debug.WriteLine($"Sending message: {msgNumber}, {msg}");
-                _messages.AddToBack(msg + " " + msgNumber);
-                Debug.WriteLine($"Queued message: {msgNumber}, {msg}");
+                _messageNumber++;
+                string message = _names[rnd.Next(0, _names.Length)];
+                Debug.WriteLine($"Sending message: {_messageNumber}, {message}");
+                _messages.AddToBack(message + " " + _messageNumber);
+                Debug.WriteLine($"Queued message: {_messageNumber}, {message}");
                 // Tell the task that we have something to process
-                _noMessagesCompletionSource?.TrySetResult(10);
-                Debug.WriteLine($"Sent message: {msgNumber}, {msg}");
+                _noMessagesCompletionSource?.TrySetResult(true);
+                Debug.WriteLine($"Sent message: {_messageNumber}, {message}");
             }
-            Debug.WriteLine($"Done Sending message: {msgNumber}");
+            Debug.WriteLine($"Done Sending message: {_messageNumber}");
         }
 
         public async void FindWorkingHost()
@@ -189,7 +185,7 @@ namespace Client.ViewModel
             await Task.Run(async () =>
             {
 
-                while (CurrentService == null)
+                while (CurrentService.ConnectionState == ConnectionStatus.Disconnected)
                 {
 
                     bool connected1 = TryConnectToService(Services[0]);
