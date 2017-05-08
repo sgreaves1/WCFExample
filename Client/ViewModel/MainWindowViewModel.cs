@@ -96,25 +96,31 @@ namespace Client.ViewModel
                         _messages.RemoveFromFront();
                     }
 
-                    try
+                    while (true)
                     {
-                        CurrentService?.Client.ActivateAlarm(ClientID, message);
-                            
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Trace("Not connected to WCF host. " + ex.Message);
-                        if (CurrentService != null)
-                            CurrentService.ConnectionState = ConnectionStatus.Disconnected;
-                        CurrentService = null;
+                        try
+                        {
+                            CurrentService.Client.ActivateAlarm(ClientID, message);
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            log.Trace("Not connected to WCF host. " + ex.Message);
+                            if (CurrentService != null)
+                                CurrentService.ConnectionState = ConnectionStatus.Disconnected;
+                            CurrentService = null;
+
+                            // If the service has gone for whatever reason, and we are not already finding a suitable host, 
+                            // then find one.
+                            if (CurrentService == null && !_findingHost)
+                            {
+                                FindWorkingHost();
+                            }
+                        }
                     }
 
-                    // If the service has gone for whatever reason, and we are not already finding a suitable host, 
-                    // then find one.
-                    //if (CurrentService == null && !_findingHost)
-                    //{
-                    //    FindWorkingHost();
-                    //}
+
+                    
                 }
             });
         }
@@ -178,14 +184,13 @@ namespace Client.ViewModel
 
             while (CurrentService == null)
             {
-                await Task.Run(() =>
-                {
-                    var task1 = TryConnectToServiceAsync(Services[0]);
-                    var task2 = TryConnectToServiceAsync(Services[1]);
-                    var task3 = TryConnectToServiceAsync(Services[2]);
 
-                    Task.WhenAll(task1, task2, task3);
-                });
+                bool connected = TryConnectToService(Services[0]);
+                connected = TryConnectToService(Services[1]);
+                connected = TryConnectToService(Services[2]);
+
+                if (connected)
+                    break;
 
                 await Task.Delay(5000);
             }
@@ -198,15 +203,16 @@ namespace Client.ViewModel
         /// </summary>
         /// <param name="service">Service object to attempt WCF connection on.</param>
         /// <returns></returns>
-        public async Task TryConnectToServiceAsync(ServiceModel service)
+        public bool TryConnectToService(ServiceModel service)
         {
-            await Task.Run(() =>
-            { 
-                if (service.TryConnect())
-                {
-                    CurrentService = service;
-                }
-            });
+            if (service.TryConnect())
+            {
+                CurrentService = service;
+                return true;
+                    
+            }
+
+            return false;
         }
 
         public async Task IntervalMessageSending(Action sendMessageAction, TimeSpan interval, CancellationToken cancellationToken)
