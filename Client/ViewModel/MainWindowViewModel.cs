@@ -185,11 +185,11 @@ namespace Client.ViewModel
             while (CurrentService == null)
             {
 
-                bool connected = TryConnectToService(Services[0]);
-                connected = TryConnectToService(Services[1]);
-                connected = TryConnectToService(Services[2]);
+                bool connected1 = TryConnectToService(Services[0]);
+                bool connected2 = TryConnectToService(Services[1]);
+                bool connected3 = TryConnectToService(Services[2]);
 
-                if (connected)
+                if (connected1 || connected2 || connected3)
                     break;
 
                 await Task.Delay(5000);
