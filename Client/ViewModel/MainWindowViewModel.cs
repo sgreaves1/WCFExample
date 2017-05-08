@@ -72,34 +72,12 @@ namespace Client.ViewModel
                 while (true)
                 {
                     Task awaitMessages = null;
-                    string message;
 
-                    lock (_messages)
+                    if (_messages.Count == 0)
                     {
-
-                        if (_messages.Count == 0)
-                        {
-                            _noMessagesCompletionSource =
-                                new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
-                            awaitMessages = _noMessagesCompletionSource.Task;
-
-                        }
-                        else
-                        {
-                            try
-                            {
-                                CurrentService.Client.ActivateAlarm(ClientID, _messages.First());
-                                log.Trace("Alarm Sent, Name: " + _messages.First());
-                                _messages.RemoveFromFront();
-                            }
-                            catch (Exception ex)
-                            {
-                                log.Trace("Not connected to WCF host. " + ex.Message);
-                                if (CurrentService != null)
-                                    CurrentService.ConnectionState = ConnectionStatus.Disconnected;
-                                CurrentService = null;
-                            }
-                        }
+                        _noMessagesCompletionSource =
+                            new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
+                        awaitMessages = _noMessagesCompletionSource.Task;
                     }
 
                     if (awaitMessages != null)
@@ -107,16 +85,36 @@ namespace Client.ViewModel
                         // Wait for the no messages task to finish.
                         // which means wait on this line while the deque is empty.
                         await awaitMessages;
-                        continue;
                     }
 
+                    string message = "";
+
+                    lock (_messages)
+                    {
+                        message = _messages.First();
+                        log.Trace("Alarm Sent, Name: " + _messages.First());
+                        _messages.RemoveFromFront();
+                    }
+
+                    try
+                    {
+                        CurrentService?.Client.ActivateAlarm(ClientID, message);
+                            
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Trace("Not connected to WCF host. " + ex.Message);
+                        if (CurrentService != null)
+                            CurrentService.ConnectionState = ConnectionStatus.Disconnected;
+                        CurrentService = null;
+                    }
 
                     // If the service has gone for whatever reason, and we are not already finding a suitable host, 
                     // then find one.
-                    if (CurrentService == null && !_findingHost)
-                    {
-                        FindWorkingHost();
-                    }
+                    //if (CurrentService == null && !_findingHost)
+                    //{
+                    //    FindWorkingHost();
+                    //}
                 }
             });
         }
