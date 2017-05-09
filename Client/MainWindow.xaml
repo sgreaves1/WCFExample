@@ -24,6 +24,6 @@
         <customControl:SendMessageControl BorderThickness="1"
                                           BorderBrush="Black"
                                           Margin="10,10,10,0"
-                                          SendCommand="{Binding Path=SendSingleButtonCommand}"/>
+                                          SendCommand="{Binding Path=SendSingleButtonCommand}" />
     </StackPanel>
 </Window>

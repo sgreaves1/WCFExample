@@ -14,7 +14,7 @@ namespace Client.CustomControl
                 typeof(ICommand), 
                 typeof(SendMessageControl), 
                 new PropertyMetadata(null));
-        
+
         static SendMessageControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SendMessageControl), new FrameworkPropertyMetadata(typeof(SendMessageControl)));

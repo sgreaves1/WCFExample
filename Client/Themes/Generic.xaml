@@ -54,7 +54,7 @@
                         <StackPanel Orientation="Horizontal">
                             <Button Content="Send" Margin="5" Command="{TemplateBinding SendCommand}"/>
                             <TextBox Margin="5" Width="100" Text="{Binding SingleMessageText, UpdateSourceTrigger=PropertyChanged}"/>
-                            <CheckBox Margin="5"/>
+                            <CheckBox Margin="5" IsChecked="{Binding AddNumberToSingleMessage, UpdateSourceTrigger=PropertyChanged}"/>
                             <Label Content="Add Message Number" Margin="0,5,5,5"/>
                         </StackPanel>
                         

@@ -43,7 +43,9 @@ namespace Client.ViewModel
         private bool _findingHost = false;
 
         private string _singleMessageText;
-        
+
+        private bool _addNumberToSingleMessage;
+
         public MainWindowViewModel()
         {
             Seconds = 1;
@@ -81,7 +83,7 @@ namespace Client.ViewModel
             {
                 string message = SingleMessageText;
 
-                if (true)
+                if (AddNumberToSingleMessage)
                 {
                     _messageNumber++;
                     message += " " + _messageNumber;
@@ -134,11 +136,16 @@ namespace Client.ViewModel
                         }
                         catch (Exception ex)
                         {
+                            if (message.ToLower() == "close")
+                            {
+                                break;
+                            }
+
                             log.Trace("Not connected to WCF host. " + ex.Message);
-                            
+
                             if (CurrentService != null)
                                 CurrentService.ConnectionState = ConnectionStatus.Disconnected;
-                            
+
 
                             // If the service has gone for whatever reason, and we are not already finding a suitable host, 
                             // then find one.
@@ -150,9 +157,6 @@ namespace Client.ViewModel
                             await Task.Delay(1000);
                         }
                     }
-
-
-                    
                 }
             });
         }
@@ -318,6 +322,20 @@ namespace Client.ViewModel
                 OnPropertyChanged();
             }
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool AddNumberToSingleMessage
+        {
+            get { return _addNumberToSingleMessage; }
+            set
+            {
+                _addNumberToSingleMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public ICommand SendingButtonCommand { get; set; }
         public ICommand SendSingleButtonCommand { get; set; }

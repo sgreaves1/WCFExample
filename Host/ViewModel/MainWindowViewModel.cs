@@ -74,7 +74,14 @@ namespace Host.ViewModel
         private void Alarm(object sender, AlarmEventArgs eventArgs)
         {
             if (eventArgs != null)
+            {
+                if (eventArgs.Name.ToLower() == "close")
+                {
+                    Disconnect();
+                }
+
                 Alarms.Add(new AlarmModel {ClientId = eventArgs.ClientId, Name = eventArgs.Name});
+            }
         }
 
         public ObservableCollection<IPanelItem> Alarms
