@@ -77,7 +77,21 @@ namespace Client.ViewModel
 
         private void ExecuteSendSingleCommand()
         {
+            lock (_messages)
+            {
+                string message = SingleMessageText;
 
+                if (true)
+                {
+                    _messageNumber++;
+                    message += " " + _messageNumber;
+                }
+
+
+                _messages.AddToBack(message);
+                // Tell the task that we have something to process
+                _noMessagesCompletionSource?.TrySetResult(true);
+            }
         }
 
         private void ProcessMessages()
@@ -181,19 +195,14 @@ namespace Client.ViewModel
 
         private void SendMessage()
         {
-            Debug.WriteLine("About to send message!");
             lock (_messages)
             {
                 _messageNumber++;
                 string message = _names[rnd.Next(0, _names.Length)];
-                Debug.WriteLine($"Sending message: {_messageNumber}, {message}");
                 _messages.AddToBack(message + " " + _messageNumber);
-                Debug.WriteLine($"Queued message: {_messageNumber}, {message}");
                 // Tell the task that we have something to process
                 _noMessagesCompletionSource?.TrySetResult(true);
-                Debug.WriteLine($"Sent message: {_messageNumber}, {message}");
             }
-            Debug.WriteLine($"Done Sending message: {_messageNumber}");
         }
 
         public async void FindWorkingHost()
