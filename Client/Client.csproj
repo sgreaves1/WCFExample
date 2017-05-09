@@ -83,6 +83,7 @@
     <Compile Include="Converter\InvertBoolConverter.cs" />
     <Compile Include="Converter\NullTovisibilityConverter.cs" />
     <Compile Include="CustomControl\AutoSendMessagesControl.cs" />
+    <Compile Include="CustomControl\SendMessageControl.cs" />
     <Compile Include="Enumerator\ConnectionStatus.cs" />
     <Compile Include="Model\BaseModel.cs" />
     <Compile Include="Model\ServiceModel.cs" />

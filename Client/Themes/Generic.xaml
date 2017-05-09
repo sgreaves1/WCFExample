@@ -42,4 +42,25 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type customControl:SendMessageControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type customControl:SendMessageControl}">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Send" Margin="5" Command="{TemplateBinding SendCommand}"/>
+                            <TextBox Margin="5" Width="100" Text="{Binding SingleMessageText, UpdateSourceTrigger=PropertyChanged}"/>
+                            <CheckBox Margin="5"/>
+                            <Label Content="Add Message Number" Margin="0,5,5,5"/>
+                        </StackPanel>
+                        
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>

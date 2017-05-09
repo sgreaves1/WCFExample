@@ -19,6 +19,11 @@
                                                BorderThickness="1"
                                                Sending="{Binding Path=Sending}"
                                                ButtonClickedCommand="{Binding Path=SendingButtonCommand}"
-                                               NumericValue="{Binding Path=Seconds}"/>
+                                               NumericValue="{Binding Path=Seconds, UpdateSourceTrigger=PropertyChanged}"/>
+
+        <customControl:SendMessageControl BorderThickness="1"
+                                          BorderBrush="Black"
+                                          Margin="10,10,10,0"
+                                          SendCommand="{Binding Path=SendSingleButtonCommand}"/>
     </StackPanel>
 </Window>

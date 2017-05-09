@@ -41,10 +41,13 @@ namespace Client.ViewModel
 
         // Flag used to indicate if the app is attempting to find a host. 
         private bool _findingHost = false;
+
+        private string _singleMessageText;
         
         public MainWindowViewModel()
         {
             Seconds = 1;
+            SingleMessageText = "";
 
             InitCommands();
 
@@ -60,6 +63,21 @@ namespace Client.ViewModel
                 Sending = !Sending;
                 Run();
             });
+
+            SendSingleButtonCommand = new RelayCommand(ExecuteSendSingleCommand, CanExecuteSendSingleCommand);
+        }
+
+        private bool CanExecuteSendSingleCommand()
+        {
+            if (String.IsNullOrEmpty(SingleMessageText))
+                return false;
+
+            return true;
+        }
+
+        private void ExecuteSendSingleCommand()
+        {
+
         }
 
         private void ProcessMessages()
@@ -278,7 +296,21 @@ namespace Client.ViewModel
                 OnPropertyChanged();
             }
         }
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public string SingleMessageText
+        {
+            get { return _singleMessageText; }
+            set
+            {
+                _singleMessageText = value;
+                OnPropertyChanged();
+            }
+        }
 
         public ICommand SendingButtonCommand { get; set; }
+        public ICommand SendSingleButtonCommand { get; set; }
     }
 }
