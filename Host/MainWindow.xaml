@@ -21,7 +21,11 @@
         <Button Content="Disconnect" Width="70" Command="{Binding Path=DisconnectCommand}" Visibility="{Binding Path=Connected, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         
         <StackPanel Orientation="Horizontal" Margin="10,10,10,10">
-            <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}" SelectedItem="{Binding Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,10,0" Width="100" MinHeight="100"/>
+            <StackPanel Orientation="Vertical">
+                <myLibrary:SelectPanelUc ItemsSource="{Binding Path=Alarms}" SelectedItem="{Binding Path=SelectedItem, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,10,0" Width="100" />
+
+                <Button Width="50" HorizontalAlignment="Right" Content="Clear" Command="{Binding Path=ClearAlarmsCommand}"/>
+            </StackPanel>
             
             <userControl:AlarmDetails Width="386" Alarm="{Binding Path=SelectedItem}" Visibility="{Binding Path=SelectedItem, Converter={StaticResource NullToVisibilityConverter}}"/>
         </StackPanel>

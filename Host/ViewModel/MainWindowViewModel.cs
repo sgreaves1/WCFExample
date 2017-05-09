@@ -31,6 +31,12 @@ namespace Host.ViewModel
         {
             ConnectCommand = new RelayCommand(Connect);
             DisconnectCommand = new RelayCommand(Disconnect);
+            ClearAlarmsCommand = new RelayCommand(EmptyAlarmList);
+        }
+
+        private void EmptyAlarmList()
+        {
+            Alarms.Clear();
         }
 
         private void Connect()
@@ -112,5 +118,6 @@ namespace Host.ViewModel
 
         public ICommand ConnectCommand { get; set; }
         public ICommand DisconnectCommand { get; set; }
+        public ICommand ClearAlarmsCommand { get; set; }
     }
 }
