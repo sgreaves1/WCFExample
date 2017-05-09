@@ -219,12 +219,22 @@ namespace Client.ViewModel
                 while (CurrentService.ConnectionState == ConnectionStatus.Disconnected)
                 {
 
-                    bool connected1 = TryConnectToService(Services[0]);
-                    bool connected2 = TryConnectToService(Services[1]);
-                    bool connected3 = TryConnectToService(Services[2]);
-
-                    if (connected1 || connected2 || connected3)
+                    if (!TryConnectToService(Services[0]))
+                    {
+                        if (!TryConnectToService(Services[1]))
+                        {
+                            if (TryConnectToService(Services[2]))
+                                break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    else
+                    {
                         break;
+                    }
 
                     await Task.Delay(5000);
                 }
