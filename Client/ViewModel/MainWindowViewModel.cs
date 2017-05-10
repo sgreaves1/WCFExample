@@ -204,7 +204,7 @@ namespace Client.ViewModel
             }
         }
 
-        private int index = 0;
+        private int index = -1;
         public void GetNextUntestedHost()
         {
             index++;
