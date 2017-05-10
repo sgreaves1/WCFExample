@@ -7,8 +7,13 @@ namespace Client.Model
     public class ServiceModel : BaseModel
     {
         private string _name;
-        private string _endpointAddress;
         private ConnectionStatus _connectionState = ConnectionStatus.Disconnected;
+
+        public ServiceModel(string endpointAddress)
+        {
+            Client = new AlarmServiceClient("WSHttpBinding_IAlarmService", endpointAddress);
+            ConnectionState = ConnectionStatus.Disconnected;
+        }
 
         public AlarmServiceClient Client;
 
@@ -18,16 +23,6 @@ namespace Client.Model
             set
             {
                 _name = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string EndpointAddress
-        {
-            get { return _endpointAddress; }
-            set
-            {
-                _endpointAddress = value;
                 OnPropertyChanged();
             }
         }
@@ -47,13 +42,11 @@ namespace Client.Model
             try
             {
                 ConnectionState = ConnectionStatus.Attempting;
-                Client = new AlarmServiceClient("WSHttpBinding_IAlarmService", EndpointAddress);
-
-                Client.Open();
+                
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ConnectionState = ConnectionStatus.Disconnected;
+                
                 return false;
             }
             

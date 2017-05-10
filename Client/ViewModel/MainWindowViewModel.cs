@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Configuration;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +22,7 @@ namespace Client.ViewModel
 
         private ObservableCollection<ServiceModel> _services = new ObservableCollection<ServiceModel>();
 
-        private ServiceModel CurrentService = new ServiceModel() {ConnectionState = ConnectionStatus.Disconnected};
+        private ServiceModel CurrentService = null;
 
         private static ILog log = LogManager.GetLogger<MainWindowViewModel>();
 
@@ -103,35 +102,39 @@ namespace Client.ViewModel
                 while (true)
                 {
                     Task awaitMessages = null;
+                    string message = null;
 
-                    if (_messages.Count == 0)
+                    lock (_messages)
                     {
-                        _noMessagesCompletionSource =
-                            new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-                        awaitMessages = _noMessagesCompletionSource.Task;
-                    }
+                        if (_messages.Count == 0)
+                        {
+                            _noMessagesCompletionSource =
+                                new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+                            awaitMessages = _noMessagesCompletionSource.Task;
+                        }
+                        else
+                        {
 
+                            message = _messages.First();
+                            log.Trace("Alarm Sent, Name: " + _messages.First());
+                            _messages.RemoveFromFront();
+                        }
+                    }
                     if (awaitMessages != null)
                     {
                         // Wait for the no messages task to finish.
                         // which means wait on this line while the deque is empty.
                         await awaitMessages;
-                    }
-
-                    string message = "";
-
-                    lock (_messages)
-                    {
-                        message = _messages.First();
-                        log.Trace("Alarm Sent, Name: " + _messages.First());
-                        _messages.RemoveFromFront();
+                        continue;
                     }
 
                     while (true)
                     {
                         try
                         {
+                            CurrentService.ConnectionState = ConnectionStatus.Attempting;
                             CurrentService.Client.ActivateAlarm(ClientID, message);
+                            CurrentService.ConnectionState = ConnectionStatus.Connected;
                             break;
                         }
                         catch (Exception ex)
@@ -144,17 +147,12 @@ namespace Client.ViewModel
                             log.Trace("Not connected to WCF host. " + ex.Message);
 
                             if (CurrentService != null)
-                                CurrentService.ConnectionState = ConnectionStatus.Disconnected;
-
-
-                            // If the service has gone for whatever reason, and we are not already finding a suitable host, 
-                            // then find one.
-                            if (!_findingHost)
                             {
-                                FindWorkingHost();
+                                CurrentService.ConnectionState = ConnectionStatus.Disconnected;
                             }
 
-                            await Task.Delay(1000);
+                            // If the service has gone for whatever reason, get the next service in the list
+                            GetNextUntestedHost();
                         }
                     }
                 }
@@ -163,9 +161,6 @@ namespace Client.ViewModel
 
         async void Run()
         {
-            if (!_findingHost)
-                FindWorkingHost();
-
             await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
         }
 
@@ -185,7 +180,7 @@ namespace Client.ViewModel
                     {
                         log.Trace("Key: " + key + " Value: " + appSettings[key]);
 
-                        Services.Add(new ServiceModel() {Name = "Host", EndpointAddress = appSettings[key]});
+                        Services.Add(new ServiceModel(appSettings[key]) {Name = "Host"});
                     }
                 }
             }
@@ -209,38 +204,14 @@ namespace Client.ViewModel
             }
         }
 
-        public async void FindWorkingHost()
+        private int index = 0;
+        public void GetNextUntestedHost()
         {
-            _findingHost = true;
+            index++;
+            if (index > Services.Count - 1)
+                index = 0;
 
-            await Task.Run(async () =>
-            {
-
-                while (CurrentService.ConnectionState == ConnectionStatus.Disconnected)
-                {
-
-                    if (!TryConnectToService(Services[0]))
-                    {
-                        if (!TryConnectToService(Services[1]))
-                        {
-                            if (TryConnectToService(Services[2]))
-                                break;
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-
-                    await Task.Delay(5000);
-                }
-            });
-
-            _findingHost = false;
+            CurrentService = Services.ToList()[index];
         }
 
         /// <summary>

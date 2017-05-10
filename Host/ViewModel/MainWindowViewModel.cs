@@ -52,7 +52,7 @@ namespace Host.ViewModel
             try
             {
                 // Step 3 Add a service endpoint.  
-                _selfHost.AddServiceEndpoint(typeof(IAlarmService), new WSHttpBinding(), "AlarmService");
+                _selfHost.AddServiceEndpoint(typeof(IAlarmService), new WSHttpBinding(SecurityMode.None), "AlarmService");
 
                 // Step 4 Enable metadata exchange.  
                 ServiceMetadataBehavior smb = new ServiceMetadataBehavior();
