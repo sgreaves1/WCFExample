@@ -1,5 +1,4 @@
-﻿using System;
-using Client.AlarmServiceReference;
+﻿using Client.AlarmServiceReference;
 using Client.Enumerator;
 
 namespace Client.Model
@@ -26,7 +25,7 @@ namespace Client.Model
                 OnPropertyChanged();
             }
         }
-
+        
         public ConnectionStatus ConnectionState
         {
             get { return _connectionState; }
@@ -35,23 +34,6 @@ namespace Client.Model
                 _connectionState = value;
                 OnPropertyChanged();
             }
-        }
-
-        public bool TryConnect()
-        {
-            try
-            {
-                ConnectionState = ConnectionStatus.Attempting;
-                
-            }
-            catch (Exception ex)
-            {
-                
-                return false;
-            }
-            
-            ConnectionState = ConnectionStatus.Connected;
-            return true;
         }
     }
 }

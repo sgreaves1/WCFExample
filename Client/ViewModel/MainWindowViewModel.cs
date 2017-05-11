@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Client.Container;
 using Client.Enumerator;
 using Client.Model;
 using Common.Logging;
 using MyLibrary.Command;
+using MyLibrary.SelectPanel;
 
 namespace Client.ViewModel
 {
@@ -33,6 +35,8 @@ namespace Client.ViewModel
         private int _seconds;
 
         private Deque<string> _messages = new Deque<string>();
+        ObservableCollection<IPanelItem> _messagesView = new ObservableCollection<IPanelItem>();
+        private IPanelItem _currentMessage; 
 
         // Set to completed when there are messages to process. Gets reset when the message deque is empty
         private static TaskCompletionSource<bool> _noMessagesCompletionSource;
@@ -90,8 +94,19 @@ namespace Client.ViewModel
 
 
                 _messages.AddToBack(message);
+                UpdateMessagesOnView();
                 // Tell the task that we have something to process
                 _noMessagesCompletionSource?.TrySetResult(true);
+            }
+        }
+
+        private void UpdateMessagesOnView()
+        {
+            MessagesOnView.Clear();
+
+            foreach (var message in _messages)
+            {
+                MessagesOnView.Add(new MessageModel() {Name = message});
             }
         }
 
@@ -106,6 +121,8 @@ namespace Client.ViewModel
 
                     lock (_messages)
                     {
+                        App.Current.Dispatcher.Invoke(UpdateMessagesOnView);
+
                         if (_messages.Count == 0)
                         {
                             _noMessagesCompletionSource =
@@ -118,6 +135,11 @@ namespace Client.ViewModel
                             message = _messages.First();
                             log.Trace("Alarm Sent, Name: " + _messages.First());
                             _messages.RemoveFromFront();
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                CurrentMessage = new MessageModel() { Name = message };
+                            } );
+                            
                         }
                     }
                     if (awaitMessages != null)
@@ -135,6 +157,10 @@ namespace Client.ViewModel
                             CurrentService.ConnectionState = ConnectionStatus.Attempting;
                             CurrentService.Client.ActivateAlarm(ClientID, message);
                             CurrentService.ConnectionState = ConnectionStatus.Connected;
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                CurrentMessage = null;
+                            });
                             break;
                         }
                         catch (Exception ex)
@@ -199,9 +225,11 @@ namespace Client.ViewModel
                 _messageNumber++;
                 string message = _names[rnd.Next(0, _names.Length)];
                 _messages.AddToBack(message + " " + _messageNumber);
-                // Tell the task that we have something to process
+               // Tell the task that we have something to process
                 _noMessagesCompletionSource?.TrySetResult(true);
             }
+
+            App.Current.Dispatcher.Invoke(UpdateMessagesOnView);
         }
 
         private int index = -1;
@@ -212,22 +240,6 @@ namespace Client.ViewModel
                 index = 0;
 
             CurrentService = Services.ToList()[index];
-        }
-
-        /// <summary>
-        /// Make an attempt to connect to the given service.
-        /// </summary>
-        /// <param name="service">Service object to attempt WCF connection on.</param>
-        /// <returns></returns>
-        public bool TryConnectToService(ServiceModel service)
-        {
-            if (service.TryConnect())
-            {
-                CurrentService = service;
-                return true;
-            }
-
-            return false;
         }
 
         public async Task IntervalMessageSending(Action sendMessageAction, TimeSpan interval, CancellationToken cancellationToken)
@@ -267,6 +279,26 @@ namespace Client.ViewModel
             set
             {
                 _services = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<IPanelItem> MessagesOnView
+        {
+            get { return _messagesView; }
+            set
+            {
+                _messagesView = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public IPanelItem CurrentMessage
+        {
+            get { return _currentMessage; }
+            set
+            {
+                _currentMessage = value;
                 OnPropertyChanged();
             }
         }

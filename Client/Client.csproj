@@ -86,6 +86,7 @@
     <Compile Include="CustomControl\SendMessageControl.cs" />
     <Compile Include="Enumerator\ConnectionStatus.cs" />
     <Compile Include="Model\BaseModel.cs" />
+    <Compile Include="Model\MessageModel.cs" />
     <Compile Include="Model\ServiceModel.cs" />
     <Compile Include="Service References\AlarmServiceReference\Reference.cs">
       <AutoGen>True</AutoGen>
