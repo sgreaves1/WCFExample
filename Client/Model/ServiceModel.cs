@@ -7,6 +7,7 @@ namespace Client.Model
     {
         private string _name;
         private ConnectionStatus _connectionState = ConnectionStatus.Disconnected;
+        private bool _tested = false;
 
         public ServiceModel(string endpointAddress)
         {
@@ -35,5 +36,16 @@ namespace Client.Model
                 OnPropertyChanged();
             }
         }
+        
+        public bool Tested
+        {
+            get { return _tested; }
+            set
+            {
+                _tested = value;
+                OnPropertyChanged();
+            }
+        }
+
     }
 }

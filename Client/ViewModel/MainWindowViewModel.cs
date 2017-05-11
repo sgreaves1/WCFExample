@@ -175,6 +175,17 @@ namespace Client.ViewModel
                             if (CurrentService != null)
                             {
                                 CurrentService.ConnectionState = ConnectionStatus.Disconnected;
+                                CurrentService.Tested = true;
+                            }
+
+                            if (Services.All(x => x.Tested))
+                            {
+                                await Task.Delay(10000);
+
+                                foreach (var serviceModel in Services)
+                                {
+                                    serviceModel.Tested = false;
+                                }
                             }
 
                             // If the service has gone for whatever reason, get the next service in the list
@@ -235,11 +246,19 @@ namespace Client.ViewModel
         private int index = -1;
         public void GetNextUntestedHost()
         {
-            index++;
-            if (index > Services.Count - 1)
-                index = 0;
+            while (true)
+            {
+                index++;
+                if (index > Services.Count - 1)
+                    index = 0;
 
-            CurrentService = Services.ToList()[index];
+                if (!Services.ToList()[index].Tested)
+                {
+                    CurrentService = Services.ToList()[index];
+                    break;
+                }
+
+            }
         }
 
         public async Task IntervalMessageSending(Action sendMessageAction, TimeSpan interval, CancellationToken cancellationToken)
