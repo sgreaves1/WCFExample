@@ -81,11 +81,6 @@ namespace Host.ViewModel
         {
             if (eventArgs != null)
             {
-                if (eventArgs.Name.ToLower() == "close")
-                {
-                    Disconnect();
-                }
-
                 Alarms.Add(new AlarmModel {ClientId = eventArgs.ClientId, Name = eventArgs.Name});
             }
         }
