@@ -57,10 +57,17 @@ namespace Client.CustomControl
                 new PropertyMetadata(false));
 
         // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty ButtonClickedCommandProperty =
-            DependencyProperty.Register("ButtonClickedCommand", 
+        public static readonly DependencyProperty SendClickedCommandProperty =
+            DependencyProperty.Register("SendClickedCommand", 
                 typeof(ICommand), 
                 typeof(AutoSendMessagesControl), 
+                new PropertyMetadata(null));
+
+        // Using a DependencyProperty as the backing store for MyProperty.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty StopClickedCommandProperty =
+            DependencyProperty.Register("StopClickedCommand",
+                typeof(ICommand),
+                typeof(AutoSendMessagesControl),
                 new PropertyMetadata(null));
 
         // Using a DependencyProperty as the backing store for NumericValue.  This enables animation, styling, binding, etc...
@@ -95,10 +102,16 @@ namespace Client.CustomControl
             set { SetValue(SendingProperty, value); }
         }
 
-        public ICommand ButtonClickedCommand
+        public ICommand SendClickedCommand
         {
-            get { return (ICommand)GetValue(ButtonClickedCommandProperty); }
-            set { SetValue(ButtonClickedCommandProperty, value); }
+            get { return (ICommand)GetValue(SendClickedCommandProperty); }
+            set { SetValue(SendClickedCommandProperty, value); }
+        }
+
+        public ICommand StopClickedCommand
+        {
+            get { return (ICommand)GetValue(StopClickedCommandProperty); }
+            set { SetValue(StopClickedCommandProperty, value); }
         }
 
         public int NumericValue

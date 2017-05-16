@@ -19,8 +19,9 @@
                                                BorderBrush="Black"
                                                BorderThickness="1"
                                                Sending="{Binding Path=Sending}"
-                                               ButtonClickedCommand="{Binding Path=SendingButtonCommand}"
-                                               NumericValue="{Binding Path=Seconds, UpdateSourceTrigger=PropertyChanged}"/>
+                                               SendClickedCommand="{Binding Path=SendingButtonCommand}"
+                                               StopClickedCommand="{Binding Path=StopingButtonCommand}"
+                                               NumericValue="{Binding Path=Seconds, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
 
         <customControl:SendMessageControl BorderThickness="1"
                                           BorderBrush="Black"

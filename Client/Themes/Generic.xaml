@@ -23,14 +23,14 @@
 
                             <StackPanel Orientation="Horizontal">
                                 <StackPanel Orientation="Vertical">
-                                    <Button Content="Start Sending" Command="{TemplateBinding ButtonClickedCommand}" Width="{TemplateBinding StartButtonWidth}" Visibility="{TemplateBinding Sending, Converter={StaticResource InvertableBooleanToVisibilityConverter}, ConverterParameter=Inverted}" />
-                                    <Button Content="Stop Sending" Command="{TemplateBinding ButtonClickedCommand}" Width="{TemplateBinding StopButtonWidth}" Visibility="{TemplateBinding Sending, Converter={StaticResource InvertableBooleanToVisibilityConverter}}" />
+                                    <Button Content="Start Sending" Command="{TemplateBinding SendClickedCommand}" Width="{TemplateBinding StartButtonWidth}" Visibility="{TemplateBinding Sending, Converter={StaticResource InvertableBooleanToVisibilityConverter}, ConverterParameter=Inverted}" />
+                                    <Button Content="Stop Sending" Command="{TemplateBinding StopClickedCommand}" Width="{TemplateBinding StopButtonWidth}" Visibility="{TemplateBinding Sending, Converter={StaticResource InvertableBooleanToVisibilityConverter}}" />
                                 </StackPanel>
 
                                 <StackPanel Orientation="Vertical">
                                     <StackPanel Orientation="Horizontal">
                                         <Label Content="Interval: " IsEnabled="{TemplateBinding Sending, Converter={StaticResource InvertBoolConverter}}"/>
-                                        <myLibrary:NumericUpDown Value="{TemplateBinding NumericValue}" IsEnabled="{TemplateBinding Sending, Converter={StaticResource InvertBoolConverter}}"/>
+                                        <myLibrary:NumericUpDown Value="{Binding Seconds, Mode=TwoWay}" IsEnabled="{TemplateBinding Sending, Converter={StaticResource InvertBoolConverter}}"/>
                                         <Label Content="Seconds" IsEnabled="{TemplateBinding Sending, Converter={StaticResource InvertBoolConverter}}"/>
                                     </StackPanel>
                                 </StackPanel>

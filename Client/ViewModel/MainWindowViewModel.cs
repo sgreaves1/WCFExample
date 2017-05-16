@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using System.Windows.Threading;
 using Client.Container;
 using Client.Enumerator;
 using Client.Model;
@@ -65,8 +64,14 @@ namespace Client.ViewModel
         {
             SendingButtonCommand = new RelayCommand(() =>
             {
-                Sending = !Sending;
+                Sending = true;
                 Run();
+            });
+
+            StopingButtonCommand = new RelayCommand(() =>
+            {
+                Sending = false;
+                cancellation.Cancel();
             });
 
             SendSingleButtonCommand = new RelayCommand(ExecuteSendSingleCommand, CanExecuteSendSingleCommand);
@@ -138,8 +143,17 @@ namespace Client.ViewModel
                             App.Current.Dispatcher.Invoke(() =>
                             {
                                 CurrentMessage = new MessageModel() { Name = message };
-                            } );
-                            
+                            });
+
+                            if (message.ToLower() == "close")
+                            {
+                                CurrentService.ConnectionState = ConnectionStatus.Disconnected;
+                                CurrentService = null;
+                                _messages.Clear();
+                                App.Current.Dispatcher.Invoke(cancellation.Cancel);
+                                continue;
+                            }
+
                         }
                     }
                     if (awaitMessages != null)
@@ -165,11 +179,6 @@ namespace Client.ViewModel
                         }
                         catch (Exception ex)
                         {
-                            if (message.ToLower() == "close")
-                            {
-                                break;
-                            }
-
                             log.Trace("Not connected to WCF host. " + ex.Message);
 
                             if (CurrentService != null)
@@ -199,6 +208,7 @@ namespace Client.ViewModel
         async void Run()
         {
             await IntervalMessageSending(SendMessage, TimeSpan.FromSeconds(Seconds), cancellation.Token);
+            Sending = false;
         }
 
         void ReadAllSettings()
@@ -277,6 +287,7 @@ namespace Client.ViewModel
                         cancellation.Dispose();
                         cancellation = new CancellationTokenSource();
                         cancellationToken = cancellation.Token;
+                        break;
                     }
                 }
             }, cancellationToken);
@@ -370,6 +381,7 @@ namespace Client.ViewModel
 
 
         public ICommand SendingButtonCommand { get; set; }
+        public ICommand StopingButtonCommand { get; set; }
         public ICommand SendSingleButtonCommand { get; set; }
     }
 }
