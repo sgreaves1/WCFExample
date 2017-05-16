@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Client.Container;
 using Client.Enumerator;
 using Client.Model;
 using Common.Logging;
@@ -33,7 +33,7 @@ namespace Client.ViewModel
 
         private int _seconds;
 
-        private Deque<string> _messages = new Deque<string>();
+        private LinkedList<string> _messages = new LinkedList<string>();
         ObservableCollection<IPanelItem> _messagesView = new ObservableCollection<IPanelItem>();
         private IPanelItem _currentMessage; 
 
@@ -98,7 +98,7 @@ namespace Client.ViewModel
                 }
 
 
-                _messages.AddToBack(message);
+                _messages.AddLast(message);
                 UpdateMessagesOnView();
                 // Tell the task that we have something to process
                 _noMessagesCompletionSource?.TrySetResult(true);
@@ -139,7 +139,7 @@ namespace Client.ViewModel
 
                             message = _messages.First();
                             log.Trace("Alarm Sent, Name: " + _messages.First());
-                            _messages.RemoveFromFront();
+                            _messages.RemoveFirst();
                             App.Current.Dispatcher.Invoke(() =>
                             {
                                 CurrentMessage = new MessageModel() { Name = message };
@@ -245,7 +245,7 @@ namespace Client.ViewModel
             {
                 _messageNumber++;
                 string message = _names[rnd.Next(0, _names.Length)];
-                _messages.AddToBack(message + " " + _messageNumber);
+                _messages.AddLast(message + " " + _messageNumber);
                // Tell the task that we have something to process
                 _noMessagesCompletionSource?.TrySetResult(true);
             }

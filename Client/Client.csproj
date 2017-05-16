@@ -78,7 +78,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Container\Deque.cs" />
     <Compile Include="Converter\InvertableBooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\InvertBoolConverter.cs" />
     <Compile Include="Converter\NullTovisibilityConverter.cs" />
